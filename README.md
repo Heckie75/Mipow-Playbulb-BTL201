@@ -134,7 +134,8 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 hold 100
 ```
 
 ### Timers 
-```$ ./mipow.exp AF:66:4B:0D:AC:E6 timer 1 22:40 0 0 255 255 10
+```
+$ ./mipow.exp AF:66:4B:0D:AC:E6 timer 1 22:40 0 0 255 255 10
 $ ./mipow.exp AF:66:4B:0D:AC:E6 timer 1 off
 $ ./mipow.exp AF:66:4B:0D:AC:E6 timer 2 22 0 0 255 255 1
 $ ./mipow.exp AF:66:4B:0D:AC:E6 timer reset
@@ -150,4 +151,9 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 random off
 ```
 $./mipow.exp AF:66:4B:0D:AC:E6 wakeup 8
 $ ./mipow.exp AF:66:4B:0D:AC:E6 doze 60
+```
+
+### Set name
+```
+$./mipow.exp AF:66:4B:0D:AC:E6 name Timewaster
 ```
