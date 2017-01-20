@@ -157,8 +157,13 @@ Timer 4:
 - ident. timer 1 but in bytes 16 to 20
 
 ### Set timer
-The MIPOW Playbulb has 4 timers and an internal clock. In order to set a new timer only one handle must be written in request-mode (instead of command mode)
-Note: With my bulb (see version above) it is not possible to activate timers with repetition. The bulb always deactivates a timer after it has started. 
+The MIPOW Playbulb has 4 timers and an internal clock which is actually more a counter than a real clock. 
+For example it is not possible to set a timer the next day. 
+Example: Current time is 20:15 (p.m.). You can't set a timer at 0:15 (a.m.). 
+In order to do it, you can set the current time to 8:15 and set the timer to 12:15. 
+
+Note: With my bulb (see version above) it is not possible to activate timers with repetition. The bulb always deactivates a timer after it has started.
+In order to set a new timer only one handle must be written in request-mode (instead of command mode) 
 
 **Write to Handle 0x1f**
 - Set: char-write-req 1f 
@@ -171,7 +176,7 @@ Note: With my bulb (see version above) it is not possible to activate timers wit
 - Byte 7: Minutes of starting time in hex – stored in handle 0x1f
 - Byte 8: Hours of starting time in hex – stored  in handle 0x1f
 - Bytes 9 – 12: Color of this timer (values for white, red, green, blue) – stored in handle 0x13
-- Byte 13: Delay of timer effect (in app called „minutes“ but this seems to be wrong) – stored in handle 13
+- Byte 13: Runtime of timer in minutes or very fast if "ff" – stored in handle 13
 
 ### Random mode (called „security“ in app)
 The bulb has a build-in functionality to turn on and off in a certain period. It is called „Security“ in app.
