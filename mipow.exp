@@ -29,6 +29,61 @@ package require Tclx
 # sets output to stdout and debug
 log_user 0
 
+set HELP(usage) "Usage: <mac> <command> <parameters...>\n"
+set HELP(turnon) "\
+  turnon                                         - Turn on light (max. white)"
+set HELP(turnoff) "\
+  turnoff                                        - Turn off light"
+set HELP(toggle) "\
+  toggle                                         - Turn off / on"
+set HELP(dim) "\
+  dim                                            - Dim light"
+set HELP(turnup) "\
+  turnup                                         - Turn up light"
+set HELP(color) "\
+  color <white> <red> <green> <blue>             - Set color based on wrgb-values (0..255)"
+set HELP(animate) "\
+  animate <white> <red> <green> <blue> <hold>    - Change color smoothly based on wrgb-values (0..255) and hold in ms"
+set HELP(triangle) "\
+  triangle <delay> <hold> <max>                  - Change colors, delay in ms (if zero then no animation, if negative then dia effect) and hold in ms"
+set HELP(stop) "\
+  stop                                           - Stop long-runnning effect / light program"
+set HELP(pulse) "\
+  pulse <hold> <white> <red> <green> <blue>      - Build-in effect pulse, hold (0..255 ms per step), colors (0..255)"
+set HELP(blink) "\
+  blink <hold> <white> <red> <green> <blue>      - Build-in effect blink, hold in 1/50s (0..255), colors (0..255)"
+set HELP(rainbow) "\
+  rainbow <hold>                                 - Build-in effect rainbow (smooth), hold 0..255 ms"
+set HELP(disco) "\
+  disco <hold>                                   - Build-in effect disco, hold is 0..255 where value is 1/100s"
+set HELP(hold) "\
+  hold <hold>                                    - Change hold value of current build-in effect"
+set HELP(halt) "\
+  halt                                           - Halt build-in effect, keeps current color"
+set HELP(timer) "\
+  timer <timer> <start> <white> <red> <green> <blue> <minutes>\n\
+  \                                               - Schedules timer with starting time (hh:mm or schedule in minutes), color and runtime in minutes, e.g. 1 21:00 255 0 0 0 1\n\
+  timer reset                                    - Deactivates all four timers\n\
+  timer <timer> off                              - Deactivates single timer"
+set HELP(fade) "\
+  fade <white> <red> <green> <blue> <minutes>    - Change color smoothly based on wrgb-values (0..255), program will be written to timer 3"
+set HELP(ambient) "\
+  ambient <minutes>                              - Starts ambient program (red to orange), program will be written to timer 3"
+set HELP(wakeup) "\
+  wakeup <minutes>                               - Starts wake up program (blue dawn), runtime in minutes, program will use all 4 timers"	
+set HELP(doze) "\
+  doze <minutes>                                 - Starts doze program (red-orange dusk), program will be written to timer 3 and timer 4"
+set HELP(random) "\
+  random <start> <stop> <min> <max> <white> <red> <green> <blue>\n\
+  \                                               - Schedules random mode with starting and ending time, min/max minutes and color, e.g. 21:00 23:59 5 60 255 0 0 0\n\	
+ random off                                     - Turns of random mode"	
+set HELP(debug) "\
+  debug <iterations> <from hnd> <to hnd>         - Prints values of handles to stdout"
+set HELP(status) "\
+  status                                         - Receive and print full state of bulb incl. color, effect, timers and randommode"
+set HELP(name) "\
+  name <name>                                    - Give bulb a new displayname"
+
 set pidfile                  ""
 set cmdfile                  ""
 
@@ -227,47 +282,43 @@ proc stop {} {
 }
 
 proc parseArgv {argv} {
+  global HELP	
   global mac
   global cmd
   global pidfile
   global cmdfile
 	
   if {[llength $argv] < 2} {
-    puts "usage: mipow.exp <mac> <command> <parameters...>"
+    puts $HELP(usage)
     puts "\nBasic commands:"
-    puts "  turnon                                         - Turn on light (max. white)"
-    puts "  turnoff                                        - Turn off light"
-    puts "  toggle                                         - Turn off / on"
-    puts "  dim                                            - Dim light"
-    puts "  turnup                                         - Turn up light"
-    puts "  color <white> <red> <green> <blue>             - Set color based on wrgb-values (0..255)"
-    puts "\nSoft-effects / light programs                  - These effects are long-running and send permanant data to bulb while bulb stays connected"
-    puts "  animate <white> <red> <green> <blue> <hold>    - Change color smoothly based on wrgb-values (0..255) and hold in ms"
-    puts "  triangle <delay> <hold> <max>                  - Change colors, delay in ms (if zero then no animation, if negative then dia effect) and hold in ms"
-    puts "  stop                                           - Stop long-runnning effect / light program"
+    puts $HELP(turnon)
+    puts $HELP(turnoff)
+    puts $HELP(toggle)
+    puts $HELP(dim)
+    puts $HELP(turnup)
+    puts $HELP(color)
+    puts "\nSoft-effects / light programs                   - These effects are long-running and send permanant data to bulb while bulb stays connected"
+    puts $HELP(animate)
+    puts $HELP(triangle)
+    puts $HELP(stop)
     puts "\nBuild-in effects:"	
-    puts "  pulse <hold> <white> <red> <green> <blue>      - Build-in effect pulse, hold (0..255 ms per step), colors (0..255)"
-    puts "  blink <hold> <white> <red> <green> <blue>      - Build-in effect blink, hold in 1/50s (0..255), colors (0..255)"
-    puts "  rainbow <hold>                                 - Build-in effect rainbow (smooth), hold 0..255 ms"
-    puts "  disco <hold>                                   - Build-in effect disco, hold is 0..255 where value is 1/100s"
-    puts "  hold <hold>                                    - Change hold value of current build-in effect"
-    puts "  halt                                           - Halt build-in effect, keeps current color"
+    puts $HELP(pulse)
+    puts $HELP(blink)
+    puts $HELP(rainbow)
+    puts $HELP(disco)
+    puts $HELP(hold)
+    puts $HELP(halt)
     puts "\nTimer commands:"
-    puts "  timer <timer> <start> <white> <red> <green> <blue> <minutes>"
-    puts "                                                 - Schedules timer with starting time (hh:mm or schedule in minutes), color and runtime in minutes, e.g. 1 21:00 255 0 0 0 1"
-    puts "  timer reset                                    - Deactivates all four timers"	  
-    puts "  timer <timer> off                              - Deactivates single timer"	
-    puts "  fade <white> <red> <green> <blue> <minutes>    - Change color smoothly based on wrgb-values (0..255), program will be written to timer 3"
-    puts "  ambient <minutes>                              - Starts ambient program (red to orange), program will be written to timer 3"
-    puts "  wakeup <minutes>                               - Starts wake up program (blue dawn), runtime in minutes, program will use all 4 timers"	
-    puts "  doze <minutes>                                 - Starts doze program (red-orange dusk), program will be written to timer 3 and timer 4"
-    puts "  random <start> <stop> <min> <max> <white> <red> <green> <blue>"
-    puts "                                                 - Schedules random mode with starting and ending time, min/max minutes and color, e.g. 21:00 23:59 5 60 255 0 0 0"	
-    puts "  random off                                     - Turns of random mode"	
+    puts $HELP(timer)
+    puts $HELP(fade)
+    puts $HELP(ambient)
+    puts $HELP(wakeup)	
+    puts $HELP(doze)
+    puts $HELP(random)
     puts "\nOther commands:"
-    puts "  debugBulb <iterations> <from hnd> <to hnd>     - Prints values of handles to stdout"
-    puts "  status                                         - Receive and print full state of bulb incl. color, effect, timers and randommode"
-    puts "  name                                           - Give bulb a new displayname"
+    puts $HELP(debug)
+    puts $HELP(status)
+    puts $HELP(name)
     exit
   }
 
@@ -282,6 +333,17 @@ proc parseArgv {argv} {
       append cmd " "
     }
     append cmd [lindex $argv $i]
+  }
+}
+
+proc checkArgs {argv req command} {
+  global HELP
+  if {[llength $argv] <= $req} {
+    puts $HELP(usage)
+    puts $HELP($command)
+    puts ""
+    cleanup	
+    exit -1
   }
 }
 
@@ -304,7 +366,9 @@ proc disconnect {} {
 proc init {level} {
   global INIT
 	
-  if {[connect] == 0} {
+  set connected [connect] 	
+	
+  if { $connected == 0} {
     if {$level & $INIT(device)} {
       readDeviceInfo
     }
@@ -318,7 +382,12 @@ proc init {level} {
       readTimers
       readRandomMode
     }
+  } else {
+    puts "Connection failed."
+    cleanup
+    exit -1
   }
+  return $connected
 }
 
 proc handleError {} {
@@ -787,10 +856,11 @@ proc doCommand {} {
 	
   switch -regexp $c {
     ^status$ {
-      init [expr $INIT(device) + $INIT(color) + $INIT(effect) + $INIT(timers)]	
+      init [expr $INIT(device) + $INIT(color) + $INIT(effect) + $INIT(timers)]
       dumpBulb
     }
-    ^debugBulb* {
+    ^debug* {
+      checkArgs $c 3 "debug"	    
       init 0
       debugBulb [lindex $c 1] [lindex $c 2] [lindex $c 3]
     }
@@ -815,34 +885,42 @@ proc doCommand {} {
       toggle
     }
     ^color* {
+      checkArgs $c 4 "color"    
       init 0
       setColor [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4]
     }
     ^animate* {
+      checkArgs $c 5 "animate"
       init [expr $INIT(color) + $INIT(effect)]
       animate [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }	  
     ^triangle* {
+      checkArgs $c 3 "triangle"
       init 0
       triangle [lindex $c 1] [lindex $c 2] [lindex $c 3]
     }
     ^pulse* {
+      checkArgs $c 5 "pulse"	    
       init 0
       setEffect "pulse" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }
     ^blink* {
+      checkArgs $c 5 "blink"    
       init 0
       setEffect "blink" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }
     ^rainbow* {
+      checkArgs $c 1 "rainbow"	    
       init 0
       setEffect "rainbow" [lindex $c 1] 0 0 0 0
     }
     ^disco* {
+      checkArgs $c 1 "disco"
       init 0
       setEffect "disco" [lindex $c 1] 0 0 0 0
     }
     ^hold* {
+      checkArgs $c 1 "hold"
       init [expr $INIT(color) + $INIT(effect)]
       setEffectHold [lindex $c 1]
     }    	
@@ -851,29 +929,35 @@ proc doCommand {} {
       setEffectHold -1
     }
     ^wakeup* {
+      checkArgs $c 1 "wakeup"	    
       init 0	
       wakeup [lindex $c 1]
     }
     ^ambient* {
+      checkArgs $c 1 "ambient"
       init 0
       ambient [lindex $c 1]
     }
     ^doze* {
+      checkArgs $c 1 "doze"
       init 0
       doze [lindex $c 1]
     }
     ^fade* {
+      checkArgs $c 1 "fade"
       init 0
       setTimer 3 0 [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }
     ^timer* {
-      init 0
-
       if {[lindex $c 1] == "reset"} {
+        init 0
 	resetTimer
       } elseif {[lindex $c 2] == "off"} {
+        init 0
         stopTimer [lindex $c 1]	
       } else {
+        checkArgs $c 1 "timer"       
+        init 0
         setTimer [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5] [lindex $c 6] [lindex $c 7]
       }
     }
@@ -882,11 +966,13 @@ proc doCommand {} {
         init 0
         stopRandomMode
       } else {
+        checkArgs $c 1 "random"	      
         init $INIT(timers)
         setRandomMode [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5] [lindex $c 6] [lindex $c 7] [lindex $c 8]
       }	
     }
     ^name* {
+      checkArgs $c 1 "name"	    
       init 0
       setBulbName [lrange [concat $c] 1 end]
     }

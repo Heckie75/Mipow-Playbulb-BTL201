@@ -111,7 +111,7 @@ Example: Blink with hold 255
 
 ## Timers
 ### Read current timers
-The MIPOW Playbulb has 4 timers and an internal clock (maybe a good chance to feed a Raspberry Pi since it does not have its own realtime clock).
+The MIPOW Playbulb has 4 timers and an internal clock.
 Note that information about timers are read from 2 different handles. 
 
 **Handle 0x1f – Status and starting times of timers**
@@ -157,11 +157,7 @@ Timer 4:
 - ident. timer 1 but in bytes 16 to 20
 
 ### Set timer
-The MIPOW Playbulb has 4 timers and an internal clock which is actually more a counter than a real clock. 
-For example it is not possible to set a timer the next day. 
-Example: Current time is 20:15 (p.m.). You can't set a timer at 0:15 (a.m.). 
-In order to do it, you can set the current time to 8:15 and set the timer to 12:15. 
-
+The MIPOW Playbulb has 4 timers and an internal clock. 
 Note: With my bulb (see version above) it is not possible to activate timers with repetition. The bulb always deactivates a timer after it has started.
 In order to set a new timer only one handle must be written in request-mode (instead of command mode) 
 
