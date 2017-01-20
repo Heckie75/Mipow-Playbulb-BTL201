@@ -281,44 +281,49 @@ proc stop {} {
   }
 }
 
-proc parseArgv {argv} {
+proc help {} {
   global HELP	
+  puts $HELP(usage)
+  puts "\nBasic commands:"
+  puts $HELP(turnon)
+  puts $HELP(turnoff)
+  puts $HELP(toggle)
+  puts $HELP(dim)
+  puts $HELP(turnup)
+  puts $HELP(color)
+  puts "\nSoft-effects / light programs                   - These effects are long-running and send permanant data to bulb while bulb stays connected"
+  puts $HELP(animate)
+  puts $HELP(triangle)
+  puts $HELP(stop)
+  puts "\nBuild-in effects:"	
+  puts $HELP(pulse)
+  puts $HELP(blink)
+  puts $HELP(rainbow)
+  puts $HELP(disco)
+  puts $HELP(hold)
+  puts $HELP(halt)
+  puts "\nTimer commands:"
+  puts $HELP(timer)
+  puts $HELP(fade)
+  puts $HELP(ambient)
+  puts $HELP(wakeup)	
+  puts $HELP(doze)
+  puts $HELP(random)
+  puts "\nOther commands:"
+  puts $HELP(debug)
+  puts $HELP(status)
+  puts $HELP(name)
+  puts ""
+}
+
+proc parseArgv {argv} {
   global mac
   global cmd
   global pidfile
   global cmdfile
 	
   if {[llength $argv] < 2} {
-    puts $HELP(usage)
-    puts "\nBasic commands:"
-    puts $HELP(turnon)
-    puts $HELP(turnoff)
-    puts $HELP(toggle)
-    puts $HELP(dim)
-    puts $HELP(turnup)
-    puts $HELP(color)
-    puts "\nSoft-effects / light programs                   - These effects are long-running and send permanant data to bulb while bulb stays connected"
-    puts $HELP(animate)
-    puts $HELP(triangle)
-    puts $HELP(stop)
-    puts "\nBuild-in effects:"	
-    puts $HELP(pulse)
-    puts $HELP(blink)
-    puts $HELP(rainbow)
-    puts $HELP(disco)
-    puts $HELP(hold)
-    puts $HELP(halt)
-    puts "\nTimer commands:"
-    puts $HELP(timer)
-    puts $HELP(fade)
-    puts $HELP(ambient)
-    puts $HELP(wakeup)	
-    puts $HELP(doze)
-    puts $HELP(random)
-    puts "\nOther commands:"
-    puts $HELP(debug)
-    puts $HELP(status)
-    puts $HELP(name)
+    help
     exit
   }
 
@@ -336,9 +341,10 @@ proc parseArgv {argv} {
   }
 }
 
-proc checkArgs {argv req command} {
+proc checkArgs {argv req command reg} {
   global HELP
-  if {[llength $argv] <= $req} {
+  set check [regexp $reg [concat $argv]]
+  if {[llength $argv] <= $req || $check == 0} {
     puts $HELP(usage)
     puts $HELP($command)
     puts ""
@@ -860,7 +866,7 @@ proc doCommand {} {
       dumpBulb
     }
     ^debug* {
-      checkArgs $c 3 "debug"	    
+      checkArgs $c 3 "debug" {^debug [0-9]+ [0-9a-fA-F]+ [0-9a-fA-F]+$}	    
       init 0
       debugBulb [lindex $c 1] [lindex $c 2] [lindex $c 3]
     }
@@ -885,42 +891,42 @@ proc doCommand {} {
       toggle
     }
     ^color* {
-      checkArgs $c 4 "color"    
+      checkArgs $c 4 "color" {^color [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
       setColor [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4]
     }
     ^animate* {
-      checkArgs $c 5 "animate"
+      checkArgs $c 5 "animate" {^animate [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init [expr $INIT(color) + $INIT(effect)]
       animate [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }	  
     ^triangle* {
-      checkArgs $c 3 "triangle"
+      checkArgs $c 3 "triangle" {^triangle -?[0-9]+ [0-9]+ [0-9]+$}
       init 0
       triangle [lindex $c 1] [lindex $c 2] [lindex $c 3]
     }
     ^pulse* {
-      checkArgs $c 5 "pulse"	    
+      checkArgs $c 5 "pulse" {^pulse [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
       setEffect "pulse" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }
     ^blink* {
-      checkArgs $c 5 "blink"    
+      checkArgs $c 5 "blink" {^blink [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
       setEffect "blink" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }
     ^rainbow* {
-      checkArgs $c 1 "rainbow"	    
+      checkArgs $c 1 "rainbow" {^rainbow [0-9]+$}
       init 0
       setEffect "rainbow" [lindex $c 1] 0 0 0 0
     }
     ^disco* {
-      checkArgs $c 1 "disco"
+      checkArgs $c 1 "disco" {^disco [0-9]+$}
       init 0
       setEffect "disco" [lindex $c 1] 0 0 0 0
     }
     ^hold* {
-      checkArgs $c 1 "hold"
+      checkArgs $c 1 "hold" {^hold [0-9]+$}
       init [expr $INIT(color) + $INIT(effect)]
       setEffectHold [lindex $c 1]
     }    	
@@ -929,22 +935,22 @@ proc doCommand {} {
       setEffectHold -1
     }
     ^wakeup* {
-      checkArgs $c 1 "wakeup"	    
+      checkArgs $c 1 "wakeup" {^wakeup [0-9]+$}  
       init 0	
       wakeup [lindex $c 1]
     }
     ^ambient* {
-      checkArgs $c 1 "ambient"
+      checkArgs $c 1 "ambient" {^ambient [0-9]+$}
       init 0
       ambient [lindex $c 1]
     }
     ^doze* {
-      checkArgs $c 1 "doze"
+      checkArgs $c 1 "doze" {^doze [0-9]+$}
       init 0
       doze [lindex $c 1]
     }
     ^fade* {
-      checkArgs $c 1 "fade"
+      checkArgs $c 1 "fade" {^fade [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
       setTimer 3 0 [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }
@@ -953,10 +959,11 @@ proc doCommand {} {
         init 0
 	resetTimer
       } elseif {[lindex $c 2] == "off"} {
+        checkArgs $c 1 "timer" {^timer [1-4] off$}	      
         init 0
         stopTimer [lindex $c 1]	
       } else {
-        checkArgs $c 1 "timer"       
+        checkArgs $c 7 "timer" {^timer [1-4] [0-9]+[:0-9]* [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}      
         init 0
         setTimer [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5] [lindex $c 6] [lindex $c 7]
       }
@@ -966,18 +973,21 @@ proc doCommand {} {
         init 0
         stopRandomMode
       } else {
-        checkArgs $c 1 "random"	      
+        checkArgs $c 8 "random"	{^random [0-2][0-9]:[0-5][0-9] [0-2][0-9]:[0-5][0-9] [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}     
         init $INIT(timers)
         setRandomMode [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5] [lindex $c 6] [lindex $c 7] [lindex $c 8]
       }	
     }
     ^name* {
-      checkArgs $c 1 "name"	    
+      checkArgs $c 1 "name" {^name .+$}
       init 0
       setBulbName [lrange [concat $c] 1 end]
     }
     ^stop$ {
       # do nothing
+    }
+    ^.*$ {
+      help
     }
   }
 }
