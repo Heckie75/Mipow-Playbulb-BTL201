@@ -75,7 +75,7 @@ set HELP(doze) "\
   doze <minutes>                                 - Starts doze program (red-orange dusk), program will be written to timer 3 and timer 4"
 set HELP(random) "\
   random <start> <stop> <min> <max> <white> <red> <green> <blue>\n\
-  \                                               - Schedules random mode with starting and ending time, min/max minutes and color, e.g. 21:00 23:59 5 60 255 0 0 0\n\	
+  \                                               - Schedules random mode with starting and ending time (in hh:mm or offset in minutes from now), min/max minutes and color, e.g. 21:00 23:59 5 60 255 0 0 0\n\	
  random off                                     - Turns of random mode"	
 set HELP(debug) "\
   debug <iterations> <from hnd> <to hnd>         - Prints values of handles to stdout"
@@ -973,7 +973,7 @@ proc doCommand {} {
         init 0
         stopRandomMode
       } else {
-        checkArgs $c 8 "random"	{^random [0-2][0-9]:[0-5][0-9] [0-2][0-9]:[0-5][0-9] [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}     
+        checkArgs $c 8 "random"	{^random [0-9]+[:0-9]* [0-9]+[:0-9]* [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}     
         init $INIT(timers)
         setRandomMode [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5] [lindex $c 6] [lindex $c 7] [lindex $c 8]
       }	
