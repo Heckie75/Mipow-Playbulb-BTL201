@@ -1,5 +1,5 @@
 # Mipow-Playbulb-BTL201
-Full-features shell script interface based on expect and gatttool for Mipow Playbulb BTL201 (and maybe others)
+Full-featured shell script interface based on expect and gatttool for Mipow Playbulb BTL201 (and maybe others)
 
 ```
 $ ./mipow.exp AF:66:4B:0D:AC:E6 
@@ -118,7 +118,6 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 turnup
 ```
 ### Software controlled animations (long running, stay connected)
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 animate
 $ ./mipow.exp AF:66:4B:0D:AC:E6 animate  255 0 0 100
 $ ./mipow.exp AF:66:4B:0D:AC:E6 triangle -10 100 10
 $ ./mipow.exp AF:66:4B:0D:AC:E6 stop
@@ -127,7 +126,7 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 stop
 ### Build-in effects
 ```
 $ ./mipow.exp AF:66:4B:0D:AC:E6 pulse 10 0 0 0 0
-$./mipow.exp AF:66:4B:0D:AC:E6 blink 20 20 0 0 0
+$ ./mipow.exp AF:66:4B:0D:AC:E6 blink 20 20 0 0 0
 $ ./mipow.exp AF:66:4B:0D:AC:E6 rainbow 20
 $ ./mipow.exp AF:66:4B:0D:AC:E6 disco 30
 $ ./mipow.exp AF:66:4B:0D:AC:E6 hold 100
