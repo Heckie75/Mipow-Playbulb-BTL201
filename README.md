@@ -159,8 +159,7 @@ $./mipow.exp AF:66:4B:0D:AC:E6 name Timewaster
 ```
 
 
-# Mipow Playbulb BTL201 
-
+# Mipow Playbulb BTL201 Bluetooth API
 ## Device Information
 
 **Handle 0x28 - The product id of the bulb**
