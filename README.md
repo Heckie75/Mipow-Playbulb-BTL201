@@ -341,7 +341,7 @@ Note that handle must be written in request-mode (instead of command mode)
 - Characteristic value/descriptor: 17 12 12 01 02 03 04 05 06 ff 00 00 00
 - Set: char-write-req 15 000312ffffffffffff00000000
 
-- Byte 1: Meaning is unclear, if random mode or timer is active value is different from „00“
+- Byte 1: current time in seconds of internal clock in hex (note that it is just for sync reasons) 
 - Bytes 2 - 3: Current time in hex (mm hh)
 - Bytes 4 - 5: Starting time of random mode (hh mm) in hex
 - Bytes 6 to 7: Ending time of random mode (hh mm) in hex
