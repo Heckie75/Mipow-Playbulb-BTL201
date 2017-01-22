@@ -323,7 +323,7 @@ In order to set a new timer only one handle must be written in request-mode (ins
 
 **Write to Handle 0x1f**
 - Set: char-write-req 1f 
-- Byte 1: Number of timer that you want to set (value 01 to 04) – stored in handle 0x1f
+- Byte 1: Number of timer that you want to set (value 00 to 03) – stored in handle 0x1f
 - Byte 2: Timer type (00 – wake-up timer, 02 – doze timer, 04 – deactivated timer), actually values from 00 to 03 – stored in handle 0x1f
 - Byte 3: set current time in seconds of internal clock in hex (note that it is just for sync reasons) -  written to handle 0x15 byte 1)
 - Byte 4: set current time minutes of internal clock in hex – afterwards available in handle 0x1f byte 14 and handle 0x15 byte 2, clock runs automatically 
