@@ -33,11 +33,11 @@ Timer commands:
  timer reset                                    - Deactivates all four timers
  timer <timer> off                              - Deactivates single timer
  fade <white> <red> <green> <blue> <minutes>    - Change color smoothly based on wrgb-values (0..255), program will be written to timer 3
- ambient <minutes>                              - Starts ambient program (red to orange), program will be written to timer 3
- wakeup <minutes>                               - Starts wake up program (blue dawn), runtime in minutes, program will use all 4 timers
- doze <minutes>                                 - Starts doze program (red-orange dusk), program will be written to timer 3 and timer 4
+ ambient <minutes> [<schedule>]                 - Starts ambient program (red to orange), <schedule> is optional, e.g. 06:30 or 90, program will be written to timer 3
+ wakeup <minutes> [<schedule>]                  - Starts wake up program (blue dawn), runtime in minutes, <schedule> is optional, e.g. 06:30 or 90, program will use all 4 timers
+ doze <minutes> [<schedule>]                    - Starts doze program (red-orange dusk), <schedule> is optional, e.g. 06:30 or 90, program will be written to timer 3 and timer 4
  random <start> <stop> <min> <max> <white> <red> <green> <blue>
-                                                - Schedules random mode with starting and ending time, min/max minutes and color, e.g. 21:00 23:59 5 60 255 0 0 0
+                                                - Schedules random mode with starting and ending time (in hh:mm or offset in minutes from now), min/max minutes and color, e.g. 21:00 23:59 5 60 255 0 0 0
     
  random off                                     - Turns of random mode
 
