@@ -68,11 +68,11 @@ set HELP(timer) "\
 set HELP(fade) "\
   fade <white> <red> <green> <blue> <minutes>    - Change color smoothly based on wrgb-values (0..255), program will be written to timer 3"
 set HELP(ambient) "\
-  ambient <minutes>                              - Starts ambient program (red to orange), program will be written to timer 3"
+  ambient <minutes> \[<schedule>\]                 - Starts ambient program (red to orange), <schedule> is optional, e.g. 06:30 or 90, program will be written to timer 3"
 set HELP(wakeup) "\
-  wakeup <minutes>                               - Starts wake up program (blue dawn), runtime in minutes, program will use all 4 timers"	
+  wakeup <minutes> \[<schedule>\]                  - Starts wake up program (blue dawn), runtime in minutes, <schedule> is optional, e.g. 06:30 or 90, program will use all 4 timers"	
 set HELP(doze) "\
-  doze <minutes>                                 - Starts doze program (red-orange dusk), program will be written to timer 3 and timer 4"
+  doze <minutes> \[<schedule>\]                    - Starts doze program (red-orange dusk), <schedule> is optional, e.g. 06:30 or 90, program will be written to timer 3 and timer 4"
 set HELP(random) "\
   random <start> <stop> <min> <max> <white> <red> <green> <blue>\n\
   \                                               - Schedules random mode with starting and ending time (in hh:mm or offset in minutes from now), min/max minutes and color, e.g. 21:00 23:59 5 60 255 0 0 0\n\	
@@ -90,7 +90,7 @@ set cmdfile                  ""
 set mac                      ""
 set cmd                      ""
 
-set timeout                  1
+set timeout                  2
 
 set DELAY                    100
 
@@ -506,21 +506,18 @@ proc hexToTime {hex} {
   return "[format "%02d" [hexToDecimal [string range $hex 0 1]]]:[format "%02d" [hexToDecimal [string range $hex 2 3]]]"
 }
 
-proc timeToHex {time hm} {
+proc timeToHex {timein hm} {
   set hex ""
-  if {[string first ":" $time] == -1} {
-    set time [currentTime [expr (1 + $time) * 60]]
-  }
+  set time [parseTime $timein] 	
 	
-  set frag [split $time ":"]
-	
+  set part [split $time ":"]
   if {$hm >= 0} {
-    scan [lindex $frag 0] %d hours 
-    scan [lindex $frag 1] %d minutes
+    scan [lindex $part 0] %d hours 
+    scan [lindex $part 1] %d minutes
     set hex "[decimalToHex [expr $hours % 24]][decimalToHex [expr $minutes % 60]]"
   } else {
-    scan [lindex $frag 0] %d hours 
-    scan [lindex $frag 1] %d minutes
+    scan [lindex $part 0] %d hours 
+    scan [lindex $part 1] %d minutes
     set hex "[decimalToHex [expr $minutes % 60]][decimalToHex [expr $hours % 24]]"	
   }
   return $hex
@@ -528,6 +525,33 @@ proc timeToHex {time hm} {
 
 proc currentTime {delta} {
   return [clock format [expr [clock seconds] + $delta] -format %H:%M]
+}
+
+proc parseTime {time} {
+  if {[string first ":" $time] == -1} {
+    return [currentTime [expr (1 + 1 * $time) * 60]]
+  } 
+
+  set part [split $time ":"]
+  scan [lindex $part 0] %d hours  
+  scan [lindex $part 1] %d minutes
+  set s [expr $hours % 3600 * 3600 + $minutes % 60 * 60]
+  return [clock format $s -format %H:%M -gmt true]
+}
+
+proc offsetTime {current offset} {
+  if {[string first ":" $current] == -1} {
+    set current [currentTime [expr (1 + $current) * 60]]
+  }
+	
+  set t [split $current ":"]
+  
+  scan [lindex $t 0] %d h 
+  scan [lindex $t 1] %d m
+  
+  set s [expr $h * 3600 + $m * 60 + $offset * 60]
+  
+  return [clock format $s -format %H:%M -gmt true]
 }
 
 proc toHexColor {white red green blue} {
@@ -540,12 +564,8 @@ proc toHexEffect {effect hold} {
 
 proc currentSeconds {} {
   global bulb
-#  if {$bulb(randommode_status) == "1b"} {
-#    return "31"
-#  } else {
-#    return "1b"
-#  }	
-  return [decimalToHex [clock format [clock seconds] -format %S]]
+  set secs [decimalToHex [clock format [clock seconds] -format %S]]	
+  return [scan $secs %d]
 }
 
 proc buildHexColor {w r g b} {
@@ -555,7 +575,6 @@ proc buildHexColor {w r g b} {
 proc parseColor {color} {
   global bulb
 
-  # parse values
   set bulb(color)         $color
   set bulb(color_white)   [hexToDecimal [string range $color 0 1]]
   set bulb(color_red)     [hexToDecimal [string range $color 2 3]]
@@ -786,7 +805,7 @@ proc playTimer {new_timer} {
 }
 
 proc setRandomMode {start stop min max w r g b} {
-  set random [currentSeconds]
+  set random [decimalToHex [currentSeconds]]
   set currentTime [timeToHex [currentTime 0] -1]
   set starthex [timeToHex $start 1]
   set stophex [timeToHex $stop 1]
@@ -798,7 +817,7 @@ proc setRandomMode {start stop min max w r g b} {
 }
 
 proc stopRandomMode {} {
-  set random [currentSeconds]
+  set random [decimalToHex [currentSeconds]]
   set currentTime [timeToHex [currentTime 0] -1]
   set starthex "ffff"
   set stophex "ffff"
@@ -811,7 +830,7 @@ proc stopRandomMode {} {
 
 proc setTimer {timer start w r g b minutes} {
   global TIMER_EFFECTS	
-	
+  
   set htimer [decimalToHex [expr $timer - 1]]
   set hcolor [buildHexColor $w $r $g $b]
   set setter "00"	
@@ -820,12 +839,12 @@ proc setTimer {timer start w r g b minutes} {
   if {$hcolor == "00000000"} {
     set htype "02"
   }
-
   set htime [timeToHex [currentTime 0] -1]
-  set seconds [currentSeconds]	
-  set hstart [timeToHex $start -1]
-	
+  set seconds [decimalToHex [currentSeconds]]
+  set starttime [parseTime $start]
+  set hstart [timeToHex $starttime -1]
   playTimer "$htimer$htype$seconds$htime$setter$hstart$hcolor$hminutes"
+  return [offsetTime $starttime $minutes]
 }
 
 proc stopTimer {timer} {
@@ -833,7 +852,7 @@ proc stopTimer {timer} {
 	
   set htimer [decimalToHex [expr $timer - 1]]
   set htype $TIMER_EFFECTS(off)
-  set seconds [currentSeconds]
+  set seconds [decimalToHex [currentSeconds]]
   set setter "ff"	
   set htime [timeToHex [currentTime 0] -1]
   set hstart "ffff"
@@ -940,19 +959,31 @@ proc doCommand {} {
       setEffectHold -1
     }
     ^wakeup* {
-      checkArgs $c 1 "wakeup" {^wakeup [0-9]+$}  
-      init 0	
-      wakeup [lindex $c 1]
+      checkArgs $c 1 "wakeup" {^wakeup [0-9]+ ?[0-9]*[:0-9]*$}  
+      init 0
+      if {[llength $c] > 2} {
+        wakeup [lindex $c 1] [lindex $c 2]
+      } else {
+        wakeup [lindex $c 1] 0
+      }
     }
     ^ambient* {
-      checkArgs $c 1 "ambient" {^ambient [0-9]+$}
+      checkArgs $c 1 "ambient" {^ambient [0-9]+ ?[0-9]*[:0-9]*$}
       init 0
-      ambient [lindex $c 1]
+      if {[llength $c] > 2} {
+        ambient [lindex $c 1] [lindex $c 2]
+      } else {
+        ambient [lindex $c 1] 0
+      }
     }
     ^doze* {
-      checkArgs $c 1 "doze" {^doze [0-9]+$}
+      checkArgs $c 1 "doze" {^doze [0-9]+ ?[0-9]*[:0-9]*$}
       init 0
-      doze [lindex $c 1]
+      if {[llength $c] > 2} {
+        doze [lindex $c 1] [lindex $c 2]
+      } else {
+        doze [lindex $c 1] 0
+      }
     }
     ^fade* {
       checkArgs $c 1 "fade" {^fade [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
@@ -1103,36 +1134,39 @@ proc turnup {} {
   }
 }
 
-proc wakeup {period} {
-  # Step 0 - turn off 	
-  setColor 0 0 0 0
-  
+proc wakeup {period start} {
   # Step 1 - blue
-  set start 0
   set minutes [expr round($period / 4)]
-  setTimer 1 $start 0 0 00 20 $minutes
+  set next [setTimer 1 $start 0 0 00 20 $minutes]
 
   # Step 2 - cyan
-  incr start $minutes
   set minutes [expr round($period / 4)]
-  setTimer 2 $start 0 0 60 255 $minutes
-  
+  set next [setTimer 2 $next 0 0 60 255 $minutes]
+	
   # Step 3 - white color
-  incr start $minutes
-  setTimer 3 $start 255 255 0 0 1
+  set minutes 1
+  set next [setTimer 3 $next 255 255 0 0 $minutes]
+  set next [offsetTime $start $period]
 
   # Step 4 - turn off
-  setTimer 4 $period 0 0 0 0 0
+  setTimer 4 $next 0 0 0 0 0
 }
 
-proc doze {period} {
-  setTimer 3 0 0 255 47 0 [expr round($period / 2)]	
-  setTimer 4 [expr round($period / 2)] 0 0 0 0 [expr round($period) / 2]
+proc doze {period start} {
+  # Step 1
+  set next [setTimer 3 $start 0 255 47 0 [expr round($period / 2)]]
+  
+  # Step 2	
+  setTimer 4 $next 0 0 0 0 [expr round($period) / 2]
 }
 
-proc ambient {period} {
-  setTimer 3 0 0 255 47 0 [expr round($period / 2)]	
-  setTimer 4 $period 0 0 0 0 0
+proc ambient {period start} {
+  # Step 1
+  set next [setTimer 3 $start 0 255 47 0 [expr round($period / 2)]]	
+  
+  # Step 2
+  set next [offsetTime $start $period]	
+  setTimer 4 $next 0 0 0 0 0
 }
 
 proc animate {white red green blue hold} {
