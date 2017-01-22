@@ -83,7 +83,9 @@ set HELP(status) "\
   status                                         - Receive and print full state of bulb incl. color, effect, timers and randommode"
 set HELP(name) "\
   name <name>                                    - Give bulb a new displayname"
-
+set HELP(reset) "\
+  reset                                          - Factory reset, everything (timers) incl. given name, bulb color"
+  
 set pidfile                  ""
 set cmdfile                  ""
 
@@ -105,6 +107,7 @@ set HANDLES(devvendor)       "30"
 set HANDLES(devsoftware)     "2e"
 set HANDLES(devcpu)          "2a"
 set HANDLES(devname)         "21"
+set HANDLES(reset)           "1d"
 set HANDLES(color)           "1b"
 set HANDLES(effect)          "19"
 set HANDLES(timersettings)   "1f"
@@ -130,7 +133,7 @@ set TIMER_EFFECTS(turnon)    "00"
 set TIMER_EFFECTS(turnoff)   "02"
 
 set bulb(name)               "00000000000000000000000000000000"
-
+set bulb(mac)                ""
 set bulb(devid)              ""
 set bulb(devversion)         ""
 set bulb(devvendor)          ""
@@ -276,7 +279,7 @@ proc stop {} {
     set runPid [readPid]
   }
 
-  if {$i == 10} {
+  if {$i == 5} {
 # TODO kill
   }
 }
@@ -313,6 +316,7 @@ proc help {} {
   puts $HELP(debug)
   puts $HELP(status)
   puts $HELP(name)
+  puts $HELP(reset)	
   puts ""
 }
 
@@ -349,15 +353,18 @@ proc checkArgs {argv req command reg} {
     puts $HELP($command)
     puts ""
     cleanup	
-    exit -1
+    exit 1
   }
 }
 
 proc connect {} {
+  global bulb	
   global mac
+	
   expect "\[LE\]"
   send "connect $mac\r"
   expect "Connection successful" {
+    set bulb(mac) $mac
     return 0
   }
   return 1
@@ -687,7 +694,7 @@ proc dumpBulb {} {
   global bulb
 
   set out "\n"
-
+  append out "Device mac:                 $bulb(mac)\n"
   append out "Device name ($HANDLES(devname)):           $bulb(devname)\n"	
   append out "Device vendor ($HANDLES(devvendor)):         $bulb(devvendor)\n"
   append out "Device id ($HANDLES(devid)):             $bulb(devid)\n"
@@ -875,6 +882,12 @@ proc setBulbName {name} {
   set bulb(devname) name
 }
 
+proc reset {} {
+  global HANDLES
+
+  playBulb $HANDLES(reset) "03" req
+}
+
 proc doCommand {} {
   global INIT
   global cmd
@@ -1019,6 +1032,11 @@ proc doCommand {} {
       init 0
       setBulbName [lrange [concat $c] 1 end]
     }
+    ^reset$ {
+      checkArgs $c 0 "reset" {^reset$}
+      init 0
+      reset
+    }	  
     ^stop$ {
       # do nothing
     }

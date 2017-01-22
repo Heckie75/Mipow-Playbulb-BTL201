@@ -203,6 +203,12 @@ Although according the app it should be possible to set a password for the bulb 
 
 ## Factory Reset
 
-The official app has a button for factory reset. I am not sure if the apps sets all values manually or calls something of the bulb. 
+A factory reset can be performed by sending the value 3 to handle 1d in request-mode (instead of command mode). 
+This resets everything (timers, randommode, name etc.). It does neither turn off the bulb nor stops running effect.  
+
+**Write to Handle 0x1f**
+- Set: char-write-req 1d
+- Byte 1: value "03" for factory reset
+
 
 BTW: The bulb forgets everything after you have disconnected it from power. Therefore this is similar to a factory reset. It seems that the „given name“ of the bulb is the only thing that is still available after loss of power. 
