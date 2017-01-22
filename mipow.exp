@@ -513,10 +513,15 @@ proc timeToHex {time hm} {
   }
 	
   set frag [split $time ":"]
+	
   if {$hm >= 0} {
-    set hex "[decimalToHex [lindex $frag 0]][decimalToHex [lindex $frag 1]]"
+    scan [lindex $frag 0] %d hours 
+    scan [lindex $frag 1] %d minutes
+    set hex "[decimalToHex [expr $hours % 24]][decimalToHex [expr $minutes % 60]]"
   } else {
-    set hex "[decimalToHex [lindex $frag 1]][decimalToHex [lindex $frag 0]]"	
+    scan [lindex $frag 0] %d hours 
+    scan [lindex $frag 1] %d minutes
+    set hex "[decimalToHex [expr $minutes % 60]][decimalToHex [expr $hours % 24]]"	
   }
   return $hex
 }
