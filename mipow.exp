@@ -1154,11 +1154,11 @@ proc turnup {} {
 
 proc wakeup {period start} {
   # Step 1 - blue
-  set minutes [expr round($period / 4)]
+  set minutes [expr round($period * 2 / 6 )]
   set next [setTimer 1 $start 0 0 00 20 $minutes]
 
   # Step 2 - cyan
-  set minutes [expr round($period / 4)]
+  set minutes [expr round($period / 6)]
   set next [setTimer 2 $next 0 0 60 255 $minutes]
 	
   # Step 3 - white color
