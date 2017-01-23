@@ -366,7 +366,7 @@ Although according the app it should be possible to set a password for the bulb 
 A factory reset can be performed by sending the value 3 to handle 1d in request-mode (instead of command mode). 
 This resets everything (timers, randommode, name etc.). It does neither turn off the bulb nor stops running effect.  
 
-**Write to Handle 0x1f**
+**Write to Handle 0x1d**
 - Set: char-write-req 1d
 - Byte 1: value "03" for factory reset
 
