@@ -487,6 +487,7 @@ proc hexToDecimal {s} {
 }
 
 proc decimalToHex {d} {
+  scan $d %d d
   set h [format %4.2x $d]
   return [string trim $h]
 }
@@ -1154,20 +1155,20 @@ proc turnup {} {
 
 proc wakeup {period start} {
   # Step 1 - blue
-  set minutes [expr round($period * 2 / 6 )]
+  set minutes [expr round($period * 30 / 75 )]
   set next [setTimer 1 $start 0 0 00 20 $minutes]
 
   # Step 2 - cyan
-  set minutes [expr round($period / 6)]
+  set minutes [expr round($period * 5 / 75)]
   set next [setTimer 2 $next 0 0 60 255 $minutes]
 	
   # Step 3 - white color
   set minutes 1
   set next [setTimer 3 $next 255 255 0 0 $minutes]
-  set next [offsetTime $start $period]
+  set next [offsetTime $start [expr $period - 1]]
 
   # Step 4 - turn off
-  setTimer 4 $next 0 0 0 0 0
+  setTimer 4 $next 0 0 0 0 1
 }
 
 proc doze {period start} {
@@ -1183,8 +1184,8 @@ proc ambient {period start} {
   set next [setTimer 3 $start 0 255 47 0 [expr round($period / 2)]]	
   
   # Step 2
-  set next [offsetTime $start $period]	
-  setTimer 4 $next 0 0 0 0 0
+  set next [offsetTime $start [expr $period - 1]]
+  setTimer 4 $next 0 0 0 0 1
 }
 
 proc animate {white red green blue hold} {
