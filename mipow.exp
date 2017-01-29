@@ -767,12 +767,17 @@ proc playBulb {handle value cmd} {
   log "playBulb: char-write-$cmd $handle $value"
 
   send "char-write-$cmd $handle $value\r"
-  expect {
-    "LE" {
-      log "ok"
+  if {$cmd == "req"} {
+    expect {
+      "Characteristic value was written successfully" {
+        log "ok"
+      }
     }
-    "Characteristic value was written successfully" {
-      log "ok"	
+  } else {
+    expect {
+      "LE" {
+        log "ok"
+      }
     }
   }
   after $DELAY
