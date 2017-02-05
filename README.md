@@ -1,6 +1,8 @@
 # Mipow-Playbulb-BTL201
 Full-featured shell script interface based on expect and gatttool for Mipow Playbulb BTL201 (and maybe others)
 
+This script allows to control the bluetooth bulb BTL201 with the Raspberry Pi's Raspian and other Linux distributions.   
+
 ```
 $ ./mipow.exp AF:66:4B:0D:AC:E6 
 Usage: <mac> <command> <parameters...>
@@ -238,6 +240,7 @@ Note: Although according the app there is an additional effect called „candle�
 
 ### More about delay of effects
 **1. Delay for smooth rainbow effect**
+
 The value is the delay in ms for every single step.
 
 Example: Delay is 255 (ff)
@@ -246,6 +249,7 @@ Example: Delay is 255 (ff)
 - It takes 0,255 secs for one step with delay of 255
 
 **2. Delay for hard rainbow effect**
+
 The value is the hold value in seconds for each color (red → yellow → green → magenta → blue → cyan)
 
 Example: Delay is 255 (ff)
@@ -254,6 +258,7 @@ Example: Delay is 255 (ff)
 - numeric value for effect is hold in 1/10s
 
 **3. Delay for pulse effect**
+
 The value is the delay in ms for every single step.
 
 Example: Pulse with hold 255 (ff)
@@ -262,6 +267,7 @@ Example: Pulse with hold 255 (ff)
 - It takes 0,255 secs for one step with hold of 255
 
 **4. Delay for blink effect**
+
 The value is the period in 1/100-seconds for each state (on, off).
 
 Example: Blink with hold 255
