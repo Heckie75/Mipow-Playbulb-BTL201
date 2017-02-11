@@ -70,13 +70,13 @@ set HELP(timer) "\
   timer reset                                    - Deactivates all four timers\n\
   timer <timer> off                              - Deactivates single timer"
 set HELP(fade) "\
-  fade <white> <red> <green> <blue> <minutes>    - Change color smoothly based on wrgb-values (0..255), program will be written to timer 3"
+  fade <white> <red> <green> <blue> <minutes>    - Change color smoothly based on wrgb-values (0..255), overwrites all timers"
 set HELP(ambient) "\
-  ambient <minutes> \[<schedule>\]                 - Starts ambient program (red to orange), <schedule> is optional, e.g. 06:30 or 90, program will be written to timer 3"
+  ambient <minutes> \[<schedule>\]                 - Starts ambient program (red to orange), <schedule> is optional, e.g. 06:30 or 90, best ins steps of 15 minutes, overwrites all timers"
 set HELP(wakeup) "\
-  wakeup <minutes> \[<schedule>\]                  - Starts wake up program (blue dawn), runtime in minutes, <schedule> is optional, e.g. 06:30 or 90, program will use all 4 timers"	
+  wakeup <minutes> \[<schedule>\]                  - Starts wake up program (blue dawn), runtime in minutes, <schedule> is optional, e.g. 06:30 or 90, best in steps of 15 minutes, overwrites all timers"	
 set HELP(doze) "\
-  doze <minutes> \[<schedule>\]                    - Starts doze program (red-orange dusk), <schedule> is optional, e.g. 06:30 or 90, program will be written to timer 3 and timer 4"
+  doze <minutes> \[<schedule>\]                    - Starts doze program (red-orange dusk), <schedule> is optional, e.g. 06:30 or 90, best in steps of 15 minutes, overwrites all timers"
 set HELP(random) "\
   random <start> <stop> <min> <max> <white> <red> <green> <blue>\n\
   \                                               - Schedules random mode with starting and ending time (in hh:mm or offset in minutes from now), min/max minutes and color, e.g. 21:00 23:59 5 60 255 0 0 0\n\	
@@ -1011,7 +1011,8 @@ proc doCommand {} {
     ^fade* {
       checkArgs $c 1 "fade" {^fade [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
-      setTimer 3 0 [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
+      resetTimer
+      setTimer 4 0 [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }
     ^timer* {
       if {[lindex $c 1] == "reset"} {
@@ -1163,38 +1164,63 @@ proc turnup {} {
 }
 
 proc wakeup {period start} {
-  # Step 1 - blue
-  set minutes [expr round($period * 30 / 75 )]
-  set next [setTimer 1 $start 0 0 00 20 $minutes]
+  set start1 $start
+  set period1 [expr round($period * 16 / 60)]
 
-  # Step 2 - cyan
-  set minutes [expr round($period * 5 / 75)]
-  set next [setTimer 2 $next 0 0 60 255 $minutes]
-	
-  # Step 3 - white color
-  set minutes 1
-  set next [setTimer 3 $next 255 255 0 0 $minutes]
-  set next [offsetTime $start [expr $period - 1]]
+  set start2 [offsetTime $start1 $period1]
+  set period2 [expr round($period * 8 / 60)]
+
+  set start3 [offsetTime $start2 $period2]
+  set period3 5
+
+  set start4 [offsetTime $start3 [expr round($period * 32 / 60)]]
+  set period4 [expr round($period * 4 / 60)]
 
   # Step 4 - turn off
-  setTimer 4 $next 0 0 0 0 1
+  setTimer 4 $start4 0 0 0 0 $period4
+
+  # Step 3 - white color
+  setTimer 3 $start3 255 255 0 0 $period3
+
+  # Step 2 - cyan
+  setTimer 2 $start2 0 0 60 255 $period2
+
+  # Step 1 - blue
+  setTimer 1 $start1 0 0 00 20 $period1
 }
 
 proc doze {period start} {
+  set start1 $start
+  set period1 [expr round($period * 40 / 60)]
+
+  set start2 [offsetTime $start1 $period1]
+  set period2 [expr round($period) * 20 / 60]
+
+  # Step 2
+  setTimer 4 $start2 0 0 0 0 $period2 
+
   # Step 1
-  set next [setTimer 3 $start 0 255 47 0 [expr round($period / 2)]]
-  
-  # Step 2	
-  setTimer 4 $next 0 0 0 0 [expr round($period) / 2]
+  setTimer 3 $start1 0 255 47 0 $period1
+
+  stopTimer 1
+  stopTimer 2
 }
 
 proc ambient {period start} {
-  # Step 1
-  set next [setTimer 3 $start 0 255 47 0 [expr round($period / 2)]]	
-  
+  set start1 $start
+  set period1 [expr round($period * 56 / 60)] 
+
+  set start2 [offsetTime $start [expr $period - 1]]
+  set period2 [expr round($period * 4 / 60)]
+
   # Step 2
-  set next [offsetTime $start [expr $period - 1]]
-  setTimer 4 $next 0 0 0 0 1
+  setTimer 4 $start2 0 0 0 0 $period2
+
+  # Step 1
+  setTimer 3 $start1 0 255 47 0 $period1
+
+  stopTimer 1
+  stopTimer 2
 }
 
 proc animate {white red green blue hold} {
