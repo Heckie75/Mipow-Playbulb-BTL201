@@ -9,45 +9,101 @@ Usage: <mac> <command> <parameters...>
 
 
 Basic commands:
- turnon                                         - Turn on light (max. white)
- turnoff                                        - Turn off light
- toggle                                         - Turn off / on
- dim                                            - Dim light
- turnup                                         - Turn up light
- color <white> <red> <green> <blue>             - Set color based on wrgb-values (0..255)
 
-Soft-effects / light programs                   - These effects are long-running and send permanant data to bulb while bulb stays connected
- animate <white> <red> <green> <blue> <hold>    - Change color smoothly based on wrgb-values (0..255) and hold in ms
- triangle <delay> <hold> <max>                  - Change colors, delay in ms (if zero then no animation, if negative then dia effect) and hold in ms
- stop                                           - Stop long-runnning effect / light program
+ on                              - turn on light (white)
+ off                             - turn off light
+ toggle                          - turn off / on
+ up                              - turn up light
+ down                            - dim light
+ color <white> <red> <green> <blue> 
+                                 - set color, each value 0 - 255
+
+Soft-effects which stay connected and run long:
+
+ animate <hold> <white> <red> <green> <blue> 
+                                 - change color smoothly based 
+                                   <hold>: 0 - 255ms 
+                                   color-values: 0 - 255
+
+ triangle <hold> <delay> <max>   - change colors 
+                                   <hold> in ms 
+                                   <delay> in ms 
+                                           0 means no animation 
+                                           < 0 means dark pause
+
+ stop                            - stop soft-effect
 
 Build-in effects:
- pulse <hold> <white> <red> <green> <blue>      - Build-in effect pulse, hold (0..255 ms per step), colors (0..255)
- blink <hold> <white> <red> <green> <blue>      - Build-in effect blink, hold in 1/50s (0..255), colors (0..255)
- rainbow <hold>                                 - Build-in effect rainbow (smooth), hold 0..255 ms
- disco <hold>                                   - Build-in effect disco, hold is 0..255 where value is 1/100s
- hold <hold>                                    - Change hold value of current build-in effect
- halt                                           - Halt build-in effect, keeps current color
+
+ pulse <hold> <white> <red> <green> <blue> 
+                                 - run build-in pulse effect 
+                                   <hold>: 0 - 255ms per step 
+                                   color-values: 0 off, 1 on
+
+ blink <hold> <white> <red> <green> <blue> 
+                                 - run build-in blink effect 
+                                   <hold>: 0 - 255ms per step 
+                                   color-values: 0 - 255
+
+ rainbow <hold>                  - run build-in rainbow effect 
+                                   <hold>: 0 - 255ms per step
+
+ disco <hold>                    - run build-in disco effect 
+                                   <hold>: 0 - 255 in 1/100s
+
+ hold <hold>                     - change hold value of effect
+
+ halt                            - halt build-in effect, keeps color
 
 Timer commands:
- timer <timer> <start> <white> <red> <green> <blue> <minutes>
-                                                - Schedules timer with starting time (hh:mm or schedule in minutes), color and runtime in minutes, e.g. 1 21:00 255 0 0 0 1
- timer reset                                    - Deactivates all four timers
- timer <timer> off                              - Deactivates single timer
- fade <white> <red> <green> <blue> <minutes>    - Change color smoothly based on wrgb-values (0..255), program will be written to timer 3
- ambient <minutes> [<schedule>]                 - Starts ambient program (red to orange), <schedule> is optional, e.g. 06:30 or 90, program will be written to timer 3
- wakeup <minutes> [<schedule>]                  - Starts wake up program (blue dawn), runtime in minutes, <schedule> is optional, e.g. 06:30 or 90, program will use all 4 timers
- doze <minutes> [<schedule>]                    - Starts doze program (red-orange dusk), <schedule> is optional, e.g. 06:30 or 90, program will be written to timer 3 and timer 4
- random <start> <stop> <min> <max> <white> <red> <green> <blue>
-                                                - Schedules random mode with starting and ending time (in hh:mm or offset in minutes from now), min/max minutes and color, e.g. 21:00 23:59 5 60 255 0 0 0
-    
- random off                                     - Turns of random mode
+
+ timer <timer> <start> <minutes> [<white> <red> <green> <blue>]
+                                 - schedules timer 
+                                   <start>: starting time 
+                                            (hh:mm or in minutes) 
+                                   <minutes>: runtime in minutes 
+                                   color-values: 0 - 255 
+ 
+ timer <timer> off               - deactivates single timer 
+ timer off                       - deactivates all timers
+
+ fade <minutes> <white> <red> <green> <blue> 
+                                 - change color smoothly 
+                                   <minutes>: runtime in minutes 
+                                   color-values: 0 - 255
+
+ ambient <minutes> [<schedule>]  - schedules ambient program 
+                                   <minutes>: runtime in minutes 
+                                   <schedule>: optional, e.g. 
+                                               06:30 or steps in 15m
+
+ wakeup <minutes> [<schedule>]   - schedules wake-up program 
+                                   <minutes>: runtime in minutes 
+                                   <schedule>: optional, e.g. 
+                                               06:30 or steps in 15m
+
+ doze <minutes> [<schedule>]     - schedules doze program 
+                                   <minutes>: runtime in minutes 
+                                   <schedule>: optional, e.g. 
+                                               06:30 or steps in 15m
+
+ random <start> <stop> <min> <max> [<white> <red> <green> <blue>]
+                                 - schedules random mode
+                                   <start>: start time 
+                                            (hh:mm or in minutes) 
+                                   <stop>: stop time 
+                                           (hh:mm or in minutes) 
+                                   <min>: min runtime in minutes 
+                                   <max>: max runtime in minutes 
+                                   color-values: 0 - 255 
+
+ random off                      - stop random mode
 
 Other commands:
- debug <iterations> <from hnd> <to hnd>         - Prints values of handles to stdout
- status                                         - Receive and print full state of bulb incl. color, effect, timers and randommode
- name <name>                                    - Give bulb a new displayname
- reset                                          - Factory reset, everything (timers) incl. given name, bulb color 
+
+ status                          - print full state of bulb
+ name <name>                     - give bulb a new displayname
+ reset                           - perform factory reset
 ```
 
 ## Examples
@@ -114,10 +170,10 @@ Randommode status:          off
 $ ./mipow.exp AF:66:4B:0D:AC:E6 color 0 255 0 0
 $ ./mipow.exp AF:66:4B:0D:AC:E6 toggle
 $ ./mipow.exp AF:66:4B:0D:AC:E6 toggle
-$ ./mipow.exp AF:66:4B:0D:AC:E6 turnoff
-$ ./mipow.exp AF:66:4B:0D:AC:E6 turnon
-$ ./mipow.exp AF:66:4B:0D:AC:E6 dim
-$ ./mipow.exp AF:66:4B:0D:AC:E6 turnup
+$ ./mipow.exp AF:66:4B:0D:AC:E6 off
+$ ./mipow.exp AF:66:4B:0D:AC:E6 on
+$ ./mipow.exp AF:66:4B:0D:AC:E6 down
+$ ./mipow.exp AF:66:4B:0D:AC:E6 up
 ```
 ### Software controlled animations (long running, stay connected)
 ```
@@ -137,10 +193,10 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 hold 100
 
 ### Timers 
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 timer 1 22:40 0 0 255 255 10
+$ ./mipow.exp AF:66:4B:0D:AC:E6 timer 1 22:40 10 0 0 255 255
 $ ./mipow.exp AF:66:4B:0D:AC:E6 timer 1 off
-$ ./mipow.exp AF:66:4B:0D:AC:E6 timer 2 22 0 0 255 255 1
-$ ./mipow.exp AF:66:4B:0D:AC:E6 timer reset
+$ ./mipow.exp AF:66:4B:0D:AC:E6 timer 2 22 1 0 0 255 255
+$ ./mipow.exp AF:66:4B:0D:AC:E6 timer off
 ```
 
 ### Random turn-on and off
