@@ -487,11 +487,11 @@ case "$command" in
     notify-send -i $DIR/icons/bulb-on.png "$NAME" "Command: $command\nColor: $color\nMinutes: ${minutes}"
   ;;
   "wakeup" )
-    $MIPOW $MAC $command $minutes $color &
+    $MIPOW $MAC $command $minutes $start &
     notify-send -i $DIR/icons/bulb-wakeup.png "$NAME" "Command: $command\nStart: ${start}\nMinutes: ${minutes}"
   ;;
   "doze" | "ambient" )
-    $MIPOW $MAC $command $minutes $color &
+    $MIPOW $MAC $command $minutes $start &
     notify-send -i $DIR/icons/bulb-doze.png "$NAME" "Command: $command\nStart: ${start}\nMinutes: ${minutes}"
   ;;
   "random" )
