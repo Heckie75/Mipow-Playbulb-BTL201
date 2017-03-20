@@ -243,12 +243,6 @@ function ask_name() {
   echo $s
 }
 
-if [ "$DISPLAY" == "" ] 
-then
-  /home/heckie/scripts/mipow.exp "$@"
-  exit $?
-fi
-
 #MAC and name
 bulb=$1
 shift
@@ -262,6 +256,12 @@ then
 fi
 MAC=`get_mac $bulb`
 NAME=`get_name $bulb`
+
+if [ "$DISPLAY" == "" ]
+then
+  $DIR/mipow.exp $MAC $@
+  exit $?
+fi
 
 # command
 command=$1
