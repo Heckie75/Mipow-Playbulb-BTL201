@@ -29,8 +29,6 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH 
 # THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package require Tclx
-
 # sets output to stdout and debug
 log_user 0
 
@@ -127,8 +125,11 @@ set HELP(name) "\
   name <name>                     - give bulb a new displayname"
 set HELP(reset) "\
   reset                           - perform factory reset"
+set HELP(setup) "\
+  setup                           - initialize your bulb for this program"
   
 set pidfile                  ""
+set hndfile                  ""
 set cmdfile                  ""
 
 set mac                      ""
@@ -143,18 +144,20 @@ set INIT(effect)             2
 set INIT(timers)             4
 set INIT(device)             8
 
-set HANDLES(devid)           "28"
-set HANDLES(devversion)      "2c"
-set HANDLES(devvendor)       "30"
-set HANDLES(devsoftware)     "2e"
-set HANDLES(devcpu)          "2a"
-set HANDLES(devname)         "21"
-set HANDLES(reset)           "1d"
-set HANDLES(color)           "1b"
-set HANDLES(effect)          "19"
-set HANDLES(timersettings)   "1f"
-set HANDLES(timereffects)    "13"
-set HANDLES(randommode)      "15"
+set CHARACTERISTIC(2a25)     "devid"
+set CHARACTERISTIC(2a26)     "devversion"
+set CHARACTERISTIC(2a29)     "devvendor"
+set CHARACTERISTIC(2a28)     "devsoftware"
+set CHARACTERISTIC(2a27)     "devcpu"
+set CHARACTERISTIC(ffff)     "devname"
+set CHARACTERISTIC(fffd)     "reset"
+set CHARACTERISTIC(fffc)     "color"
+set CHARACTERISTIC(fffb)     "effect"
+set CHARACTERISTIC(fffe)     "timersettings"
+set CHARACTERISTIC(fff8)     "timereffects"
+set CHARACTERISTIC(fff9)     "randommode"
+
+array set HANDLES            {}
 
 set COLORS(white)            "ff000000"
 set COLORS(red)              "00ff0000"
@@ -357,7 +360,8 @@ proc help {} {
   puts "\nOther commands:\n"
   puts $HELP(status)
   puts $HELP(name)
-  puts $HELP(reset)	
+  puts $HELP(reset)
+  puts $HELP(setup)
   puts ""
 }
 
@@ -366,6 +370,7 @@ proc parseArgv {argv} {
   global cmd
   global pidfile
   global cmdfile
+  global hndfile
 	
   if {[llength $argv] < 2} {
     help
@@ -376,7 +381,8 @@ proc parseArgv {argv} {
   set _mac [regsub -all {[\:]+} $mac {-}]
   append pidfile "/tmp/bulb-" $_mac ".pid"
   append cmdfile "/tmp/bulb-" $_mac ".cmd"
-	
+  append hndfile "/tmp/bulb-" $_mac ".hnd"
+
   set cmd ""
   for {set i 1} {$i < [llength $argv]} {incr i} {
     if {$i > 1} {
@@ -419,8 +425,10 @@ proc disconnect {} {
 
 proc init {level} {
   global INIT
+
+  initHandles
 	
-  set connected [connect] 	
+  set connected [connect]
 	
   if { $connected == 0} {
     if {$level & $INIT(device)} {
@@ -442,6 +450,40 @@ proc init {level} {
     exit -1
   }
   return $connected
+}
+
+proc initHandles {} {
+  global HANDLES
+  global CHARACTERISTIC
+  global HELP
+  global hndfile
+
+  if {[file exists $hndfile] == 0} {
+    setupCharacteristics
+  }
+
+  set fp [open $hndfile r]
+  fconfigure $fp -buffering line
+
+  gets $fp data
+  while {$data != ""} {
+    regexp "char value handle = 0x\(\[0-9a-fA-F]+), uuid = \[0]+(\[0-9a-fA-F]+)" $data matched handle uuid
+
+    if { ! [info exists CHARACTERISTIC($uuid)] } {
+      gets $fp data
+      continue
+    } 
+
+    set HANDLES($CHARACTERISTIC($uuid)) $handle
+    gets $fp data
+  }
+
+  close $fp
+
+  if { [array size HANDLES] != [array size CHARACTERISTIC] } {
+    puts "ERROR: Handles of your bulb are not initialized yet or incorrectly. Re-run setup!\n"
+    checkArgs "setup" 2 "setup" {^setup$}	    
+  }
 }
 
 proc handleError {} {
@@ -935,6 +977,13 @@ proc reset {} {
   playBulb $HANDLES(reset) "03" req
 }
 
+proc setupCharacteristics {} {
+  global mac
+  global hndfile
+
+  exec gatttool -b $mac --characteristics > $hndfile
+}
+
 proc doCommand {} {
   global INIT
   global cmd
@@ -1085,12 +1134,14 @@ proc doCommand {} {
       setBulbName [lrange [concat $c] 1 end]
     }
     ^reset$ {
-      checkArgs $c 0 "reset" {^reset$}
       init 0
       reset
     }	  
     ^stop$ {
       # do nothing
+    }
+    ^setup$ {
+      setupCharacteristics
     }
     ^.*$ {
       help
