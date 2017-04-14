@@ -104,6 +104,7 @@ Other commands:
  status                          - print full state of bulb
  name <name>                     - give bulb a new displayname
  reset                           - perform factory reset
+ setup                           - initialize your bulb for this program
 ```
 
 ## Examples
