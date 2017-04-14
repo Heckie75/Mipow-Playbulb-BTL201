@@ -981,7 +981,11 @@ proc setupCharacteristics {} {
   global mac
   global hndfile
 
+  puts "Read characteristics from bulb $mac ..."
+
   exec gatttool -b $mac --characteristics > $hndfile
+
+  puts "... saved in $hndfile for mapping handles in future\n"
 }
 
 proc doCommand {} {
