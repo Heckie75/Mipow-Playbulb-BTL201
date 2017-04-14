@@ -38,6 +38,7 @@ handle = 0x003b, char properties = 0x02, char value handle = 0x003c, uuid = 0000
 ```
 
 | uuid | description |
+| --- | --- |
 | 2a25 | product id | 
 | 2a26 | product version |
 | 2a29 | vendor |
