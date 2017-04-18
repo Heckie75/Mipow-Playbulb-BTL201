@@ -32,7 +32,11 @@
 # sets output to stdout and debug
 log_user 0
 
-set HELP(usage) "Usage: <mac> <command> <parameters...>\n"
+set HELP(usage) "Usage: <mac/alias> <command> <parameters...>\n\
+ \                                  <mac>: bluetooth mac address of bulb\n\
+ \                                  <alias>: you can use alias instead of mac address \n\
+ \                                           after you have run setup (see setup) \n\
+ \                                  <command>: For command and parameters"
 set HELP(turnon) "\
   on                              - turn on light (white)"
 set HELP(turnoff) "\
@@ -82,11 +86,13 @@ set HELP(halt) "\
 set HELP(timer) "\
   timer <timer> <start> <minutes> \[<white> <red> <green> <blue>\]\n\
  \                                - schedules timer \n\
+ \                                  <timer>: No. of timer 1 - 4 \n\ 
  \                                  <start>: starting time \n\
  \                                           (hh:mm or in minutes) \n\
  \                                  <minutes>: runtime in minutes \n\
  \                                  color values: 0 - 255 \n\ 
  timer <timer> off               - deactivates single timer \n\
+ \                                  <timer>: No. of timer 1 - 4 \n\  
  timer off                       - deactivates all timers"  
 set HELP(fade) "\
   fade <minutes> <white> <red> <green> <blue> \n\
@@ -129,8 +135,7 @@ set HELP(name) "\
 set HELP(reset) "\
   reset                           - perform factory reset"
 set HELP(setup) "\
-  setup                           - force setup bulb for this program\n\
- \                                  (implicitly done during first run)"
+  setup                           - setup bulb for this program"
 
 set pidfile                  ""
 set hndfile                  ""
@@ -162,6 +167,8 @@ set CHARACTERISTIC(fff8)     "timereffects"
 set CHARACTERISTIC(fff9)     "randommode"
 
 array set HANDLES            {}
+
+array set knownBulbs         {}
 
 set COLORS(white)            "ff000000"
 set COLORS(red)              "00ff0000"
@@ -382,6 +389,19 @@ proc parseArgv {argv} {
   }
 
   set mac [lindex $argv 0]
+  
+  set _mac [regexp "\[0-9a-fA-F]{2}:\[0-9a-fA-F]{2}:\[0-9a-fA-F]{2}:\[0-9a-fA-F]{2}:\[0-9a-fA-F]{2}:\[0-9a-fA-F]{2}" $mac]
+
+  if { $_mac == 0 } {
+    readKnownBulbs
+    lookupKnownBulbByName $mac
+  }
+
+  if { $mac == "" } {
+    puts "Bulb \"[lindex $argv 0]\" currently not known. Run setup before using alias."
+    checkArgs "setup" 2 "setup" {^setup$}
+  }
+
   set _mac [regsub -all {[\:]+} $mac {-}]
   append pidfile "/tmp/bulb-" $_mac ".pid"
   append cmdfile "/tmp/bulb-" $_mac ".cmd"
@@ -970,9 +990,12 @@ proc resetTimer {} {
 
 proc setBulbName {name} {
   global HANDLES
+  global bulb
 	
   playBulb $HANDLES(devname) [asciiToHex $name] req
-  set bulb(devname) name
+  set bulb(devname) $name
+
+  storeKnownBulbs
 }
 
 proc reset {} {
@@ -982,14 +1005,95 @@ proc reset {} {
 }
 
 proc setupCharacteristics {} {
-  global mac
   global hndfile
-
-  puts "Read characteristics from bulb $mac ..."
-
+  global mac
+   
   exec gatttool -b $mac --characteristics > $hndfile
+}
 
-  puts "... saved in $hndfile for mapping handles in future\n"
+proc setup {} {
+  global INIT
+  global hndfile
+  global mac
+  global bulb
+  global knownBulbs
+
+  puts "\nSetup for bulb started ...\n"
+
+  puts "Step 1: Read characteristics from bulb $mac ..."
+
+  setupCharacteristics
+
+  puts "> characteristics saved in $hndfile\n"
+
+  puts "Step 2: Read bulb name ..."
+  init [expr $INIT(device)]
+  set knownBulbs($mac) $bulb(devname)
+  storeKnownBulbs
+  puts "> bulb name is \"$bulb(devname)\""
+  puts "> bulb name stored in ~/known_bulbs for usage with aliases.\n"
+  puts "Setup completed!\n"
+  puts "Usage with mac address:"
+  puts "$ ./mipow.exp $bulb(mac) status\n"
+  puts "Usage with alias:"
+  puts "$ ./mipow.exp \"$bulb(devname)\" status\n"
+  puts "Have fun with your bulb!\n"
+
+  cleanup
+
+  exit 1
+}
+
+proc storeKnownBulbs {} {
+  global knownBulbs
+  global bulb
+  global mac
+
+  readKnownBulbs
+
+  set knownBulbs($mac) $bulb(devname)
+
+  set fp [open "~/known_bulbs" w]  
+  foreach _mac [lsort [array names knownBulbs]] {
+    puts $fp "$_mac\t$knownBulbs($_mac)"
+  }
+  close $fp
+}
+
+proc readKnownBulbs {} {
+  global knownBulbs
+
+  if {[file exists "~/known_bulbs"] == 0} {
+    return
+  }
+
+  set fp [open "~/known_bulbs" r]
+  fconfigure $fp -buffering line
+
+  gets $fp data
+  while {$data != ""} {
+    regexp "(\[^\\t]+)\\t(\.+)" $data matched _mac _name
+
+    set knownBulbs($_mac) $_name
+    gets $fp data
+  }
+
+  close $fp
+}
+
+proc lookupKnownBulbByName {pattern} {
+  global knownBulbs
+  global bulb
+  global mac
+
+  set mac ""
+
+  foreach _mac [lsort [array names knownBulbs]] {
+    set found [regexp "$pattern" $knownBulbs($_mac) matched]
+    if { $found } {
+      set mac $_mac
+    }
+  }
 }
 
 proc doCommand {} {
@@ -1149,7 +1253,7 @@ proc doCommand {} {
       # do nothing
     }
     ^setup$ {
-      setupCharacteristics
+      setup
     }
     ^.*$ {
       help

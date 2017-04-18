@@ -5,35 +5,38 @@ This script allows to control the bluetooth bulb BTL201 with the Raspberry Pi's 
 
 ```
 $ ./mipow.exp AF:66:4B:0D:AC:E6 
-Usage: <mac> <command> <parameters...>
-
+Usage: <mac/alias> <command> <parameters...>
+                                   <mac>: bluetooth mac address of bulb
+                                   <alias>: you can use alias instead of mac address 
+                                            after you have run setup (see setup) 
+                                   <command>: For command and parameters
 
 Basic commands:
 
  on                              - turn on light (white)
  off                             - turn off light
  toggle                          - turn off / on (remembers color!)
- color <white> <red> <green> <blue>
+ color <white> <red> <green> <blue> 
                                  - set color, each value 0 - 255
  up                              - turn up light
  down                            - dim light
 
 Build-in effects:
 
- pulse <hold> <white> <red> <green> <blue>
-                                 - run build-in pulse effect
-                                   <hold>: 0 - 255ms per step
+ pulse <hold> <white> <red> <green> <blue> 
+                                 - run build-in pulse effect 
+                                   <hold>: 0 - 255ms per step 
                                    color values: 0=off, 1=on
 
- blink <hold> <white> <red> <green> <blue>
-                                 - run build-in blink effect
-                                   <hold>: 0 - 255ms per step
+ blink <hold> <white> <red> <green> <blue> 
+                                 - run build-in blink effect 
+                                   <hold>: 0 - 255ms per step 
                                    color values: 0 - 255
 
- rainbow <hold>                  - run build-in rainbow effect
+ rainbow <hold>                  - run build-in rainbow effect 
                                    <hold>: 0 - 255ms per step
 
- disco <hold>                    - run build-in disco effect
+ disco <hold>                    - run build-in disco effect 
                                    <hold>: 0 - 255 in 1/100s
 
  hold <hold>                     - change hold value of current effect
@@ -42,15 +45,15 @@ Build-in effects:
 
 Soft-effects which stay connected and run long:
 
- animate <hold> <white> <red> <green> <blue>
-                                 - change color smoothly based
-                                   <hold>: 0 - 255ms
+ animate <hold> <white> <red> <green> <blue> 
+                                 - change color smoothly based 
+                                   <hold>: 0 - 255ms 
                                    color-values: 0 - 255
 
- triangle <hold> <delay> <max>   - change colors
-                                   <hold> in ms
-                                   <delay> in ms
-                                           0 means no animation
+ triangle <hold> <delay> <max>   - change colors 
+                                   <hold> in ms 
+                                   <delay> in ms 
+                                           0 means no animation 
                                            < 0 means dark pause
 
  stop                            - stop soft-effect
@@ -58,47 +61,51 @@ Soft-effects which stay connected and run long:
 Timer commands:
 
  timer <timer> <start> <minutes> [<white> <red> <green> <blue>]
-                                 - schedules timer
-                                   <start>: starting time
-                                            (hh:mm or in minutes)
-                                   <minutes>: runtime in minutes
-                                   color values: 0 - 255
-
- timer <timer> off               - deactivates single timer
+                                 - schedules timer 
+                                   <timer>: No. of timer 1 - 4 
+ 
+                                   <start>: starting time 
+                                            (hh:mm or in minutes) 
+                                   <minutes>: runtime in minutes 
+                                   color values: 0 - 255 
+ 
+ timer <timer> off               - deactivates single timer 
+                                   <timer>: No. of timer 1 - 4 
+  
  timer off                       - deactivates all timers
 
- fade <minutes> <white> <red> <green> <blue>
-                                 - change color smoothly
-                                   <minutes>: runtime in minutes
+ fade <minutes> <white> <red> <green> <blue> 
+                                 - change color smoothly 
+                                   <minutes>: runtime in minutes 
                                    color values: 0 - 255
 
- ambient <minutes> [<start>]     - schedules ambient program
-                                   <minutes>: runtime in minutes
-                                              best in steps of 15m
+ ambient <minutes> [<start>]     - schedules ambient program 
+                                   <minutes>: runtime in minutes 
+                                              best in steps of 15m 
                                    <start>: starting time (optional)
                                             (hh:mm or in minutes)
 
- wakeup <minutes> [<start>]      - schedules wake-up program
-                                   <minutes>: runtime in minutes
-                                              best in steps of 15m
+ wakeup <minutes> [<start>]      - schedules wake-up program 
+                                   <minutes>: runtime in minutes 
+                                              best in steps of 15m 
                                    <start>: starting time (optional)
                                             (hh:mm or in minutes)
 
- doze <minutes> [<start>]        - schedules doze program
-                                   <minutes>: runtime in minutes
-                                              best in steps of 15m
+ doze <minutes> [<start>]        - schedules doze program 
+                                   <minutes>: runtime in minutes 
+                                              best in steps of 15m 
                                    <start>: starting time (optional)
                                             (hh:mm or in minutes)
 
  random <start> <stop> <min> <max> [<white> <red> <green> <blue>]
                                  - schedules random mode
-                                   <start>: start time
-                                            (hh:mm or in minutes)
-                                   <stop>: stop time
-                                           (hh:mm or in minutes)
-                                   <min>: min runtime in minutes
-                                   <max>: max runtime in minutes
-                                   color values: 0 - 255
+                                   <start>: start time 
+                                            (hh:mm or in minutes) 
+                                   <stop>: stop time 
+                                           (hh:mm or in minutes) 
+                                   <min>: min runtime in minutes 
+                                   <max>: max runtime in minutes 
+                                   color values: 0 - 255 
 
  random off                      - stop random mode
 
@@ -107,8 +114,7 @@ Other commands:
  status                          - print full state of bulb
  name <name>                     - give bulb a new displayname
  reset                           - perform factory reset
- setup                           - force setup bulb for this program
-                                   (implicitly done during first run)
+ setup                           - setup bulb for this program
 ```
 
 ## Examples
@@ -230,7 +236,7 @@ _"Mipow bulbs are all equal. But some bulbs are more equal than others."_
 
 Actually the bulbs are not equal. There are a lot of different models. I have developed this script based
 on a Mipow Playbulb BTL201. Even in terms of one and the same model they maybe differ in software / firmware 
-versions. The result is that the API is different too in terms of the requests and _handles_ that have too be sent. 
+versions. The result is that the API is different too in terms of the requests and _handles_ that have to be sent. 
 Based on the so called _characteristics_ it is possible to find out which _handles_ are used for which API call since
 all bulbs share the same _UUIDs_. 
 

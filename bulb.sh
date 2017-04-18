@@ -1,14 +1,14 @@
 #!/bin/bash
 DIR="$(dirname "$0")"
 MIPOW="$DIR/mipow.exp"
-BULBS="$DIR/bulb.conf"
+BULBS="$HOME/known_bulbs"
 ME="$DIR/bulb.sh"
 
 command=""
 hold=""
 
 function get_mac() {
-  egrep '^[^#]' ${BULBS} | egrep -i "$1" | egrep -o '[0-9A-Z:]+$'
+  egrep '^[^#]' ${BULBS} | egrep -i "$1" | egrep -o '^[0-9A-Z:]+'
 }
 
 function get_name() {
@@ -23,8 +23,8 @@ function ask_bulb() {
   --width=640 \
   --height=480 \
   --list \
-  --column="Name" \
-  --column="MAC"\
+  --column="MAC" \
+  --column="Name"\
   $known_bulbs`
   
   echo $bulb
