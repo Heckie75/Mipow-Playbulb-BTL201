@@ -1,12 +1,39 @@
-# Mipow Playbulb BTL201 
-
+# Mipow Playbulb BTL201 Bluetooth API
 ## Characteristics
 
-The handles mentioned below are meant for my bulb and depend on mipow device, version, software version etc. 
+_"Mipow bulbs are all equal. But some bulbs are more equal than others."_
 
-Therefore you have to check the characteristics of your device by running the "characteristics" command in gatttool and map the uuids to the handles as follows:
+Actually the bulbs are not equal. There are a lot of different models. I have developed this script based
+on a Mipow Playbulb BTL201. Even in terms of one and the same model they maybe differ in software / firmware 
+versions  
 
-Output of characteristcs command:
+The mipow script runs the `characteristics` command implicitly during the first run and stores the characteristics 
+in `/tmp` folder, e.g. `/tmp/bulb-A9-D5-4B-0D-AC-E6.hnd`. Afterwards the script is able to map _uuids_ to _handles_ 
+by looking them up as follows:
+```
+handle = 0x0002, char properties = 0x0a, char value handle = 0x0003, uuid = 00002a00-0000-1000-8000-00805f9b34fb
+                                                                            ^----> ^ UUID
+                                                               ^->^ Handle
+```
+
+Here is a table of UUIDs and their meaning. Maybe there are other bulbs which have more functionality and therefore more useful UUIDs.
+
+| UUID | Meaning |
+| --- | --- |
+| 2a25 | product id | 
+| 2a26 | product version |
+| 2a29 | vendor |
+| 2a28 | software version |
+| 2a27 | microprocessor |
+| ffff | given name |
+| fffd | reset |
+| fffc | color |
+| fffb | effect |
+| fffe | timer settings |
+| fff8 | timer effects |
+| fff9 | random mode |
+
+Full output of `characteristcs` for my bulb:
 ```
 handle = 0x0002, char properties = 0x0a, char value handle = 0x0003, uuid = 00002a00-0000-1000-8000-00805f9b34fb
 handle = 0x0004, char properties = 0x02, char value handle = 0x0005, uuid = 00002a01-0000-1000-8000-00805f9b34fb
@@ -33,25 +60,9 @@ handle = 0x0034, char properties = 0x0a, char value handle = 0x0035, uuid = 0000
 handle = 0x0036, char properties = 0x08, char value handle = 0x0037, uuid = 00001018-d102-11e1-9b23-00025b00a5a5
 handle = 0x0038, char properties = 0x12, char value handle = 0x0039, uuid = 00001014-d102-11e1-9b23-00025b00a5a5
 handle = 0x003b, char properties = 0x02, char value handle = 0x003c, uuid = 00001011-d102-11e1-9b23-00025b00a5a5
-                                                                            ^----> ^ uuid
-                                                               ^->^ Handle
 ```
 
-| uuid | description |
-| --- | --- |
-| 2a25 | product id | 
-| 2a26 | product version |
-| 2a29 | vendor |
-| 2a28 | software version |
-| 2a27 | microprocessor |
-| ffff | given name |
-| fffd | reset |
-| fffc | color |
-| fffb | effect |
-| fffe | timer settings |
-| fff8 | timer effects |
-| fff9 | random mode |
-
+**Note: The handles mentioned below are meant for my bulb. Therefore you have to check the characteristics of your device by running the "characteristics" command in gatttool.**
 
 ## Device Information
 

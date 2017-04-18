@@ -38,7 +38,7 @@ set HELP(turnon) "\
 set HELP(turnoff) "\
   off                             - turn off light"
 set HELP(toggle) "\
-  toggle                          - turn off / on"
+  toggle                          - turn off / on (remembers color!)"
 set HELP(turnup) "\
   up                              - turn up light"
 set HELP(dim) "\
@@ -63,12 +63,12 @@ set HELP(pulse) "\
   pulse <hold> <white> <red> <green> <blue> \n\
  \                                - run build-in pulse effect \n\
  \                                  <hold>: 0 - 255ms per step \n\
- \                                  color-values: 0 off, 1 on" 
+ \                                  color values: 0=off, 1=on" 
 set HELP(blink) "\
   blink <hold> <white> <red> <green> <blue> \n\
  \                                - run build-in blink effect \n\
  \                                  <hold>: 0 - 255ms per step \n\
- \                                  color-values: 0 - 255" 
+ \                                  color values: 0 - 255" 
 set HELP(rainbow) "\
   rainbow <hold>                  - run build-in rainbow effect \n\
  \                                  <hold>: 0 - 255ms per step" 
@@ -76,7 +76,7 @@ set HELP(disco) "\
   disco <hold>                    - run build-in disco effect \n\
  \                                  <hold>: 0 - 255 in 1/100s"
 set HELP(hold) "\
-  hold <hold>                     - change hold value of effect"
+  hold <hold>                     - change hold value of current effect"
 set HELP(halt) "\
   halt                            - halt build-in effect, keeps color"
 set HELP(timer) "\
@@ -85,29 +85,32 @@ set HELP(timer) "\
  \                                  <start>: starting time \n\
  \                                           (hh:mm or in minutes) \n\
  \                                  <minutes>: runtime in minutes \n\
- \                                  color-values: 0 - 255 \n\ 
+ \                                  color values: 0 - 255 \n\ 
  timer <timer> off               - deactivates single timer \n\
  timer off                       - deactivates all timers"  
 set HELP(fade) "\
   fade <minutes> <white> <red> <green> <blue> \n\
  \                                - change color smoothly \n\
  \                                  <minutes>: runtime in minutes \n\
- \                                  color-values: 0 - 255"
+ \                                  color values: 0 - 255"
 set HELP(ambient) "\
-  ambient <minutes> \[<schedule>\]  - schedules ambient program \n\
+  ambient <minutes> \[<start>\]     - schedules ambient program \n\
  \                                  <minutes>: runtime in minutes \n\
- \                                  <schedule>: optional, e.g. \n\
- \                                              06:30 or steps in 15m"
+ \                                             best in steps of 15m \n\
+ \                                  <start>: starting time (optional)\n\
+ \                                           (hh:mm or in minutes)"
 set HELP(wakeup) "\
-  wakeup <minutes> \[<schedule>\]   - schedules wake-up program \n\
+  wakeup <minutes> \[<start>\]      - schedules wake-up program \n\
  \                                  <minutes>: runtime in minutes \n\
- \                                  <schedule>: optional, e.g. \n\
- \                                              06:30 or steps in 15m"
+ \                                             best in steps of 15m \n\
+ \                                  <start>: starting time (optional)\n\
+ \                                           (hh:mm or in minutes)"
 set HELP(doze) "\
-  doze <minutes> \[<schedule>\]     - schedules doze program \n\
+  doze <minutes> \[<start>\]        - schedules doze program \n\
  \                                  <minutes>: runtime in minutes \n\
- \                                  <schedule>: optional, e.g. \n\
- \                                              06:30 or steps in 15m"
+ \                                             best in steps of 15m \n\
+ \                                  <start>: starting time (optional)\n\
+ \                                           (hh:mm or in minutes)"
 set HELP(random) "\
   random <start> <stop> <min> <max> \[<white> <red> <green> <blue>\]\n\
  \                                - schedules random mode\n\
@@ -117,7 +120,7 @@ set HELP(random) "\
  \                                          (hh:mm or in minutes) \n\
  \                                  <min>: min runtime in minutes \n\
  \                                  <max>: max runtime in minutes \n\
- \                                  color-values: 0 - 255 \n\n\
+ \                                  color values: 0 - 255 \n\n\
  random off                      - stop random mode"
 set HELP(status) "\
   status                          - print full state of bulb"
@@ -126,8 +129,9 @@ set HELP(name) "\
 set HELP(reset) "\
   reset                           - perform factory reset"
 set HELP(setup) "\
-  setup                           - initialize your bulb for this program"
-  
+  setup                           - force setup bulb for this program\n\
+ \                                  (implicitly done during first run)"
+
 set pidfile                  ""
 set hndfile                  ""
 set cmdfile                  ""
@@ -336,13 +340,9 @@ proc help {} {
   puts $HELP(turnon)
   puts $HELP(turnoff)
   puts $HELP(toggle)
+  puts $HELP(color)
   puts $HELP(turnup)
   puts $HELP(dim)
-  puts $HELP(color)
-  puts "\nSoft-effects which stay connected and run long:\n"
-  puts "$HELP(animate)\n"
-  puts "$HELP(triangle)\n"
-  puts $HELP(stop)
   puts "\nBuild-in effects:\n"	
   puts "$HELP(pulse)\n"
   puts "$HELP(blink)\n"
@@ -350,6 +350,10 @@ proc help {} {
   puts "$HELP(disco)\n"
   puts "$HELP(hold)\n"
   puts "$HELP(halt)"
+  puts "\nSoft-effects which stay connected and run long:\n"
+  puts "$HELP(animate)\n"
+  puts "$HELP(triangle)\n"
+  puts $HELP(stop)
   puts "\nTimer commands:\n"
   puts "$HELP(timer)\n"
   puts "$HELP(fade)\n"
