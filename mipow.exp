@@ -131,7 +131,7 @@ set HELP(random) "\
 set HELP(status) "\
   status                          - print full state of bulb"
 set HELP(name) "\
-  name <name>                     - give bulb a new displayname"
+  name <name>                     - give bulb a new displayname / alias"
 set HELP(reset) "\
   reset                           - perform factory reset"
 set HELP(setup) "\
@@ -369,10 +369,10 @@ proc help {} {
   puts "$HELP(doze)\n"
   puts "$HELP(random)"
   puts "\nOther commands:\n"
-  puts $HELP(status)
-  puts $HELP(name)
-  puts $HELP(reset)
   puts $HELP(setup)
+  puts $HELP(name)
+  puts $HELP(status)
+  puts $HELP(reset)
   puts ""
 }
 

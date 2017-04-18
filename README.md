@@ -111,10 +111,10 @@ Timer commands:
 
 Other commands:
 
- status                          - print full state of bulb
- name <name>                     - give bulb a new displayname
- reset                           - perform factory reset
  setup                           - setup bulb for this program
+ name <name>                     - give bulb a new displayname / alias
+ status                          - print full state of bulb
+ reset                           - perform factory reset
 ```
 
 ## Examples
