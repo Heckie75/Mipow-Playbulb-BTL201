@@ -117,26 +117,27 @@ Other commands:
 ```
 $ ./mipow.exp AF:66:4B:0D:AC:E6 status
 
-Device name (21):           Bulb Livingroom
-Device vendor (30):         Mipow Limited
-Device id (28):             BTL201
-Device version (2c):        BTL201_v2
-Device software (2e):       Application version 2.4.3.26
-Device CPU (2a):            CSR101x A05
+Device mac:                 AF:66:4B:0D:AC:E6
+Device name (0021):         Livingroom
+Device vendor (0030):       Mipow Limited
+Device id (0028):           BTL201
+Device version (002c):      BTL201_v2
+Device software (002e):     Application version 2.4.3.26
+Device CPU (002a):          CSR101x A05
 
-Current color (1b):         89762f00
-White / Red / Green / Blue: WRGB(137,118,47,0)
+Current color (001b):       00000000
+White / Red / Green / Blue: off
 
-Current effect (19):        0000ff00ff006464
+Current effect (0019):      0000ffc5ff00ffff
 Effect:                     halt (ff)
-Effect color:               WRGB(0,0,255,0)
-Effect time (raw):          100
+Effect color:               WRGB(0,0,255,197)
+Effect time (raw):          255
 Effect time (approx.):      n/a
 
-Timer Settings (1f):        04ffff04ffff00ffff02171b1703
-Timer Effect (13):          0000000000000000000000ff2f001e000000001e
+Timer Settings (001f):      04ffff04ffff04ffff04ffff160e
+Timer Effect (0013):        0000000000000000000000ff2f00700000000008
 
-Time:                       23:03
+Time:                       22:14
 
 Timer 1:                    04ffff
 Timer 1 effect:             0000000000
@@ -152,21 +153,21 @@ Timer 2 time:               n/a
 Timer 2 color:              off
 Timer 2 time (minutes):     0
 
-Timer 3:                    00ffff
-Timer 3 effect:             00ff2f001e
-Timer 3 type:               turnon (00)
+Timer 3:                    04ffff
+Timer 3 effect:             00ff2f0070
+Timer 3 type:               off (04)
 Timer 3 time:               n/a
 Timer 3 color:              WRGB(0,255,47,0)
-Timer 3 time (minutes):     30
+Timer 3 time (minutes):     112
 
-Timer 4:                    02171b
-Timer 4 effect:             000000001e
-Timer 4 type:               turnoff (02)
-Timer 4 time:               23:27
+Timer 4:                    04ffff
+Timer 4 effect:             0000000008
+Timer 4 type:               off (04)
+Timer 4 time:               n/a
 Timer 4 color:              off
-Timer 4 time (minutes):     30
+Timer 4 time (minutes):     8
 
-Randommode (15):            2f0317ffffffffffff00000000
+Randommode (0015):          040e16ffffffff000000000000
 Randommode status:          off
 ```
 
