@@ -20,18 +20,18 @@ Here is a table of UUIDs and their meaning. Maybe there are other bulbs which ha
 
 | UUID | Meaning |
 | --- | --- |
-| 2a25 | product id | 
-| 2a26 | product version |
-| 2a29 | vendor |
-| 2a28 | software version |
-| 2a27 | microprocessor |
-| ffff | given name |
-| fffd | reset |
-| fffc | color |
-| fffb | effect |
-| fffe | timer settings |
-| fff8 | timer effects |
-| fff9 | random mode |
+| 00002a25 | product id | 
+| 00002a26 | product version |
+| 00002a29 | vendor |
+| 00002a28 | software version |
+| 00002a27 | microprocessor |
+| 0000ffff | given name |
+| 0000fffd | reset |
+| 0000fffc | color |
+| 0000fffb | effect |
+| 0000fffe | timer settings |
+| 0000fff8 | timer effects |
+| 0000fff9 | random mode |
 
 Full output of `characteristcs` for my bulb:
 ```
@@ -66,42 +66,42 @@ handle = 0x003b, char properties = 0x02, char value handle = 0x003c, uuid = 0000
 
 ## Device Information
 
-**The product id of the bulb (uuid 2a25)**
+**The product id of the bulb (uuid = 00002a25)**
 - Encoded in ASCII, you must transform hex to ascii
 - Default value: „BTL201“
 - Get: char-read-hnd 28
 - Characteristic value/descriptor: 42 54 4c 32 30 31
 - Set: n/a
 
-**The product id of the bulb incl. Version (uuid 2a26)**
+**The product id of the bulb incl. Version (uuid = 00002a26)**
 - Encoded in ASCII, you must transform hex to ascii
 - Default value: „BTL201_v2“
 - Get: char-read-hnd 2c
 - Characteristic value/descriptor: 42 54 4c 32 30 31 5f 76 32
 - Set: n/a
 
-**The vendor of the bulb (uuid 2a29)**
+**The vendor of the bulb (uuid = 00002a29)**
 - Encoded in ASCII, you must transform hex to ascii
 - Default value: „Mipow Limited“
 - Get: char-read-hnd 30
 - Characteristic value/descriptor: 4d 69 70 6f 77 20 4c 69 6d 69 74 65 64
 - Set: n/a
 
-**The software version of the bulb (uuid 2a28)**
+**The software version of the bulb (uuid = 00002a28)**
 - Encoded in ASCII, you must transform hex to ascii
 - Default value: „Application version 2.4.3.26“
 - Get: char-read-hnd 2e
 - Characteristic value/descriptor: 41 70 70 6c 69 63 61 74 69 6f 6e 20 76 65 72 73 69 6f 6e 20 32 2e 34 2e 33 2e 32 36
 - Set: n/a
 
-**Microprocessor of bulb (uuid 2a27)**
+**Microprocessor of bulb (uuid = 00002a27)**
 - Encoded in ASCII, you must transform hex to ascii
 - Default value: „CSR101x A05“ 
 - Get: char-read-hnd 2a
 - Characteristic value/descriptor: 43 53 52 31 30 31 78 20 41 30 35
 - Set: n/a
 
-**The given name of the bulb (uuid ffff)**
+**The given name of the bulb (uuid = 0000ffff)**
 - Default value: "MIPOW SMART BULB"
 - Get: char-read-hnd 3
 - Characteristic value/descriptor: 4d 49 50 4f 57 20 53 4d 41 52 54 20 42 55 4c 42
@@ -113,7 +113,7 @@ handle = 0x003b, char properties = 0x02, char value handle = 0x003c, uuid = 0000
 ## Color
 The color of the bulb. Can also be used in order to read current color, in case that effect runs. 
 
-**Color of bulb (uuid fffc)**
+**Color of bulb (uuid = 0000fffc)**
 - Get: char-read-hnd 1b
 - Characteristic value/descriptor: ff 00 00 00
 - Set: char-write-cmd 1b ff000000
@@ -128,7 +128,7 @@ The color of the bulb. Can also be used in order to read current color, in case 
 The bulb has four effects, i.e. blink, pulse, smooth rainbow, hard rainbow. 
 Note: Although according the app there is an additional effect called „candle“ It does not work with my bulb.
 
-**effect of bulb (uuid fffc)**
+**effect of bulb (uuid = 0000fffc)**
 
 - Get: char-read-hnd 19
 - Characteristic value/descriptor: 00 00 00 00 ff 00 00 00
@@ -178,7 +178,7 @@ Example: Blink with hold 255
 The MIPOW Playbulb has 4 timers and an internal clock.
 Note that information about timers are read from 2 different handles. 
 
-**Status and starting times of timers (uuid fffe)**
+**Status and starting times of timers (uuid = 0000fffe)**
 
 - Get: char-write-req 1f
 - Characteristic value/descriptor: 04 ff ff 04 ff ff 04 ff ff 04 ff ff 00 00
@@ -201,7 +201,7 @@ Timer 4:
 Clock:
 - Byte 13 and 14: Current time (hh mm) in hex, does not run if neither random mode nor at least one timer is active!
 
-**Color and running time of timers (uuid fff8)**
+**Color and running time of timers (uuid = 0000fff8)**
 
 - Get: char-write-req 13
 - Characteristic value/descriptor: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -225,7 +225,7 @@ The MIPOW Playbulb has 4 timers and an internal clock.
 Note: With my bulb (see version above) it is not possible to activate timers with repetition. The bulb always deactivates a timer after it has started.
 In order to set a new timer only one handle must be written in request-mode (instead of command mode) 
 
-**Write to Handle 0x1f (uuid fffe)**
+**Write to Handle 0x1f (uuid = 0000fffe)**
 - Set: char-write-req 1f 
 - Byte 1: Number of timer that you want to set (value 01 to 04) – stored in handle 0x1f
 - Byte 2: Timer type (00 – wake-up timer, 02 – doze timer, 04 – deactivated timer), actually values from 00 to 03 – stored in handle 0x1f
@@ -238,7 +238,7 @@ In order to set a new timer only one handle must be written in request-mode (ins
 - Bytes 9 – 12: Color of this timer (values for white, red, green, blue) – stored in handle 0x13
 - Byte 13: Runtime of timer in minutes or very fast if "ff" – stored in handle 13
 
-### Random mode called „security“ in app (uuid fff9)
+### Random mode called „security“ in app (uuid = 0000fff9)
 The bulb has a build-in functionality to turn on and off in a certain period. It is called „Security“ in app.
 Note that handle must be written in request-mode (instead of command mode)
 
@@ -265,7 +265,7 @@ The MIPOW Playbulb has an internal clock. Unfortunately it only runs in case tha
 ## Password (n/a)
 Although according the app it should be possible to set a password for the bulb it does not work with my bulb.
 
-## Factory Reset (uuid fffd)
+## Factory Reset (uuid = 0000fffd)
 
 A factory reset can be performed by sending the value 3 to handle 1d in request-mode (instead of command mode). 
 This resets everything (timers, randommode, name etc.). It does neither turn off the bulb nor stops running effect.  
