@@ -230,10 +230,12 @@ _"Mipow bulbs are all equal. But some bulbs are more equal than others."_
 
 Actually the bulbs are not equal. There are a lot of different models. I have developed this script based
 on a Mipow Playbulb BTL201. Even in terms of one and the same model they maybe differ in software / firmware 
-versions  
+versions. The result is that the API is different too in terms of the requests and _handles_ that have too be sent. 
+Based on the so called _characteristics_ it is possible to find out which _handles_ are used for which API call since
+all bulbs share the same _UUIDs_. 
 
 The mipow script runs the `characteristics` command implicitly during the first run and stores the characteristics 
-in `/tmp` folder, e.g. `/tmp/bulb-A9-D5-4B-0D-AC-E6.hnd`. Afterwards the script is able to map _uuids_ to _handles_ 
+in `/tmp` folder, e.g. `/tmp/bulb-A9-D5-4B-0D-AC-E6.hnd`. Afterwards the script is able to map _UUIDs_ to _handles_ 
 by looking them up as follows:
 ```
 handle = 0x0002, char properties = 0x0a, char value handle = 0x0003, uuid = 00002a00-0000-1000-8000-00805f9b34fb
