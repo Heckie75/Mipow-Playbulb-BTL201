@@ -119,7 +119,23 @@ Other commands:
 
 ## Initial setup
 
-1. Find out the mac address of your bulb
+0. Check pre-conditions
+
+Install `expect`:
+```
+$ sudo apt install expect
+```
+
+Check if `gatttool` is available:
+```
+$ gatttool
+Usage:
+  gatttool [OPTION...]
+...
+
+```
+
+1. Find out the MAC address of your bulb
 
 ```
 $ sudo hcitool lescan
@@ -151,7 +167,7 @@ Step 2: Read bulb name ...
 
 Setup completed!
 
-Usage with mac address:
+Usage with MAC address:
 $ ./mipow.exp AF:66:4B:0D:AC:E6 status
 
 Usage with alias:
@@ -246,7 +262,17 @@ Randommode status:          off
 If something wents wrong, you maybe want to cleanup some files:
 ```
 $ rm ~/.known_bulbs
-$ brm /tmp/bulb-*
+$ rm /tmp/bulb-*
+```
+
+5. Try GUI for bulb
+
+I have also added a simple GUI. You can start it as follows:
+
+
+**Note** This GUI requires `zenity`. You can install it as follows:
+```
+$ sudo apt install zenity
 ```
 
 ## Examples
