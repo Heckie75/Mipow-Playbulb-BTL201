@@ -1,7 +1,7 @@
 #!/bin/bash
 DIR="$(dirname "$0")"
 MIPOW="$DIR/mipow.exp"
-BULBS="$HOME/known_bulbs"
+BULBS="$HOME/.known_bulbs"
 ME="$DIR/bulb.sh"
 
 command=""

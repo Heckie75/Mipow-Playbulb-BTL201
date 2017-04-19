@@ -117,11 +117,73 @@ Other commands:
  reset                           - perform factory reset
 ```
 
-## Examples
-### Receive status
+## Initial setup
+
+1. Find out the mac address of yout bulb
 
 ```
+$ sudo hcitool lescan
+LE Scan ...
+38:01:95:84:A8:B1 (unknown)
+AF:66:4B:0D:AC:E6 (unknown)
+AF:66:4B:0D:AC:E6 MIPOW SMART BULB
+```
+
+2. Run setup command
+
+By running the setup command, two things will be done:
+a. There is a new file in your home folder called `~/.known_bulbs`. This file contains a mapping of MAC addresses and names. 
+b. There is a new file in your `/tmp` folder, e.g. `/tmp/bulb-AF-66-4B-0D-AC-E6.hnd`. It is a description of the _characteristics_ and _handles_ that your bulb provide. See API for more details. 
+
+```
+$ ./mipow.exp AF:66:4B:0D:AC:E6 setup
+
+Setup for bulb started ...
+
+Step 1: Read characteristics from bulb AF:66:4B:0D:AC:E6 ...
+> characteristics saved in /tmp/bulb-AF-66-4B-0D-AC-E6.hnd
+
+Step 2: Read bulb name ...
+> bulb name is "MIPOW SMART BULB"
+> bulb name stored in ~/.known_bulbs for usage with aliases.
+
+Setup completed!
+
+Usage with mac address:
 $ ./mipow.exp AF:66:4B:0D:AC:E6 status
+
+Usage with alias:
+$ ./mipow.exp "MIPOW SMART BULB" status
+
+Have fun with your bulb!
+```
+
+You can double-check both files as follows:
+```
+$ cat ~/.known_bulbs 
+AF:66:4B:0D:AC:E6 MIPOW SMART BULB
+```
+
+```
+$ cat /tmp/bulb-AF-66-4B-0D-AC-E6.hnd 
+handle = 0x0002, char properties = 0x0a, char value handle = 0x0003, uuid = 00002a00-0000-1000-8000-00805f9b34fb
+...
+```
+
+3. Give name a new name
+
+In order to be able to distinguish multiple bulbs you should rename your bulb. 
+
+```
+$ ./mipow.exp AF:66:4B:0D:AC:E6 name Livingroom
+```
+
+4. Check status of bulb
+
+**Note:** You can use just a part of the name, here only "Liv", instead of MAC address or the full given name. 
+
+```
+$ ./mipow.exp Liv status
 
 Device mac:                 AF:66:4B:0D:AC:E6
 Device name (0021):         Livingroom
@@ -134,9 +196,9 @@ Device CPU (002a):          CSR101x A05
 Current color (001b):       00000000
 White / Red / Green / Blue: off
 
-Current effect (0019):      0000ffc5ff00ffff
+Current effect (0019):      006bff00ff00ffff
 Effect:                     halt (ff)
-Effect color:               WRGB(0,0,255,197)
+Effect color:               WRGB(0,107,255,0)
 Effect time (raw):          255
 Effect time (approx.):      n/a
 
@@ -173,8 +235,34 @@ Timer 4 time:               n/a
 Timer 4 color:              off
 Timer 4 time (minutes):     8
 
-Randommode (0015):          040e16ffffffff000000000000
+Randommode (0015):          020e16ffffffff000000000000
 Randommode status:          off
+```
+
+4. If something wents wrong
+If something wents wrong, you maybe want to cleanup some files:
+```
+$ rm ~/.known_bulbs
+$ brm /tmp/bulb-*
+```
+
+Afterwards you probably want to re-run setup!
+
+## Examples
+### Ask for help
+``` 
+$ ./mipow.exp help
+
+...
+
+$ ./mipow.exp Liv color
+Usage: <mac/alias> <command> <parameters...>
+                                   <mac>: bluetooth mac address of bulb
+                                   <alias>: you can use alias instead of mac address 
+                                            after you have run setup (see setup) 
+                                   <command>: For command and parameters
+ color <white> <red> <green> <blue> 
+                                 - set color, each value 0 - 255
 ```
 
 ### Set color
