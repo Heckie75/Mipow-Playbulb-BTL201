@@ -1045,7 +1045,7 @@ proc setup {} {
 
   cleanup
 
-  exit 1
+  exit 0
 }
 
 proc storeKnownBulbs {} {

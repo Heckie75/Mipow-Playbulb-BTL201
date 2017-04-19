@@ -119,7 +119,7 @@ Other commands:
 
 ## Initial setup
 
-1. Find out the mac address of yout bulb
+1. Find out the mac address of your bulb
 
 ```
 $ sudo hcitool lescan
@@ -132,7 +132,9 @@ AF:66:4B:0D:AC:E6 MIPOW SMART BULB
 2. Run setup command
 
 By running the setup command, two things will be done:
+
 a. There is a new file in your home folder called `~/.known_bulbs`. This file contains a mapping of MAC addresses and names. 
+
 b. There is a new file in your `/tmp` folder, e.g. `/tmp/bulb-AF-66-4B-0D-AC-E6.hnd`. It is a description of the _characteristics_ and _handles_ that your bulb provide. See API for more details. 
 
 ```
@@ -170,7 +172,7 @@ handle = 0x0002, char properties = 0x0a, char value handle = 0x0003, uuid = 0000
 ...
 ```
 
-3. Give name a new name
+3. Give bulb a new name
 
 In order to be able to distinguish multiple bulbs you should rename your bulb. 
 
@@ -179,8 +181,6 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 name Livingroom
 ```
 
 4. Check status of bulb
-
-**Note:** You can use just a part of the name, here only "Liv", instead of MAC address or the full given name. 
 
 ```
 $ ./mipow.exp Liv status
@@ -239,14 +239,15 @@ Randommode (0015):          020e16ffffffff000000000000
 Randommode status:          off
 ```
 
+**Note:** You can use just a part of the name, here only "Liv", instead of MAC address or the full given name. 
+
 4. If something wents wrong
+
 If something wents wrong, you maybe want to cleanup some files:
 ```
 $ rm ~/.known_bulbs
 $ brm /tmp/bulb-*
 ```
-
-Afterwards you probably want to re-run setup!
 
 ## Examples
 ### Ask for help
@@ -275,12 +276,6 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 on
 $ ./mipow.exp AF:66:4B:0D:AC:E6 down
 $ ./mipow.exp AF:66:4B:0D:AC:E6 up
 ```
-### Software controlled animations (long running, stay connected)
-```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 animate  255 0 0 100
-$ ./mipow.exp AF:66:4B:0D:AC:E6 triangle -10 100 10
-$ ./mipow.exp AF:66:4B:0D:AC:E6 stop
-```
 
 ### Build-in effects
 ```
@@ -290,6 +285,22 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 rainbow 20
 $ ./mipow.exp AF:66:4B:0D:AC:E6 disco 30
 $ ./mipow.exp AF:66:4B:0D:AC:E6 hold 100
 ```
+
+### Software controlled animations (long running, stay connected)
+```
+$ ./mipow.exp AF:66:4B:0D:AC:E6 animate  255 0 0 100
+$ ./mipow.exp AF:66:4B:0D:AC:E6 triangle -10 100 10
+```
+
+You can stop _software controlled animations_ by using a second terminal and enter the following:
+
+```
+$ ./mipow.exp AF:66:4B:0D:AC:E6 stop
+```
+
+The script finds the other running process for this bulb by reading the _process id file_, e.g. `/tmp/bulb-AF-66-4B-0D-AC-E6.pid` and sends a _stop signal_ to the other process.
+
+**Note** If a previous process has not been terminated correctly, the script tries to stop the other process first before it continues. This takes 5 seconds. 
 
 ### Timers 
 ```
