@@ -267,8 +267,19 @@ $ rm /tmp/bulb-*
 
 5. Try GUI for bulb
 
-I have also added a simple GUI. You can start it as follows:
+I have also added a simple GUI.
 
+The more parameters you pass, the less dialogs will appear ;-)
+```
+$ ./bulb.sh Liv color
+...
+
+$ ./bulb.sh Liv
+...
+
+$ ./bulb.sh
+...
+```
 
 **Note** This GUI requires `zenity`. You can install it as follows:
 ```
