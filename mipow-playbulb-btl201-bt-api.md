@@ -130,7 +130,7 @@ The color of the bulb. Can also be used in order to read current color, in case 
 The bulb has four effects, i.e. blink, pulse, smooth rainbow, hard rainbow. 
 Note: Although according the app there is an additional effect called „candle“ It does not work with my bulb.
 
-**effect of bulb (uuid = 0000fffc)**
+**effect of bulb (uuid = 0000fffb)**
 
 - Get: char-read-hnd 19
 - Characteristic value/descriptor: 00 00 00 00 ff 00 00 00
