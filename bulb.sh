@@ -229,16 +229,12 @@ function ask_schedule() {
   text="Please enter time (hh:mm) or schedule in minutes"
   s=`zenity --entry --title="Schedule timer" --text="$text"`
   
-  check_interupt $?
-  
   echo $s
 }
 
 function ask_name() {
   text="Please enter new name for bulb!"
   s=`zenity --entry --title="Rename bulb" --text="$text"`
-  
-  check_interupt $?
   
   echo $s
 }
@@ -300,7 +296,7 @@ esac
 
 # start time for timer / random
 case "$command" in 
-  "timer 1" | "timer 2" | "timer 3" | "timer 4" | "ambient" | "wakeup" | "doze" | "random" )
+  "timer 1" | "timer 2" | "timer 3" | "timer 4" | "random" )
     start=$1
     shift
     
@@ -359,6 +355,23 @@ case "$command" in
     then
       maxminutes=`ask_hold random_max $minutes`
       if [ "$maxminutes" == "" ]
+      then
+        exit 1
+      fi
+    fi
+  ;;
+esac
+
+# start time for timer effects
+case "$command" in
+  "ambient" | "wakeup" | "doze" )
+    start=$1
+    shift
+
+    if [ "$start" == "" ]
+    then
+      start=`ask_schedule $command`
+      if [ "$start" == "" ]
       then
         exit 1
       fi
