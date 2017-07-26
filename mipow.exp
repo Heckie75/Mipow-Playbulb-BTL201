@@ -117,6 +117,14 @@ set HELP(doze) "\
  \                                             best in steps of 15m \n\
  \                                  <start>: starting time (optional)\n\
  \                                           (hh:mm or in minutes)"
+set HELP(bgr) "\
+ bgr <minutes> \[<start>\] \[<brightness>\] \n\
+\                                - schedules blue-green-red program \n\
+\                                  <minutes>: runtime in minutes \n\
+\                                             best in steps of 3m \n\
+\                                  <start>: starting time (optional)\n\
+\                                           (hh:mm or in minutes)\n\
+\                                  <brightness>: 0 - 255 (default: 255)"
 set HELP(random) "\
   random <start> <stop> <min> <max> \[<white> <red> <green> <blue>\]\n\
  \                                - schedules random mode\n\
@@ -369,6 +377,7 @@ proc help {} {
   puts "$HELP(ambient)\n"
   puts "$HELP(wakeup)\n"
   puts "$HELP(doze)\n"
+  puts "$HELP(bgr)\n"
   puts "$HELP(random)"
   puts "\nOther commands:\n"
   puts $HELP(setup)
@@ -1212,6 +1221,17 @@ proc doCommand {} {
         doze [lindex $c 1] 0
       }
     }
+    ^bgr* {
+      checkArgs $c 1 "bgr" {^bgr [0-9]+ ?[0-9]*[:0-9]* ?[0-9]*$}
+      init 0
+      if {[llength $c] > 3} {
+	bgr [lindex $c 1] [lindex $c 2] [lindex $c 3]
+      } elseif {[llength $c] > 2} {
+	bgr [lindex $c 1] [lindex $c 2] 255
+      } else {
+	bgr [lindex $c 1] 0 255
+      }
+    }	  
     ^fade* {
       checkArgs $c 1 "fade" {^fade [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
@@ -1221,7 +1241,7 @@ proc doCommand {} {
     ^timer* {
       if {[lindex $c 1] == "off"} {
         init 0
- resetTimer
+        resetTimer
       } elseif {[lindex $c 2] == "off"} {
         checkArgs $c 1 "timer" {^timer [1-4] off$}
         init 0
@@ -1414,6 +1434,32 @@ proc doze {period start} {
 
   stopTimer 1
   stopTimer 2
+}
+
+proc bgr {period start brightness} {
+  set start1 $start
+  set period1 [expr round($period / 4)]
+
+  set start2 [offsetTime $start1 $period1]
+  set period2 [expr round($period / 4)]
+
+  set start3 [offsetTime $start2 $period2]
+  set period3 [expr round($period / 4)]
+
+  set start4 [offsetTime $start3 $period3]
+  set period4 [expr round($period / 4)]
+
+  # Step 4 - turn off
+  setTimer 4 $start4 $period4 0 0 0 0
+
+  # Step 3 - red
+  setTimer 3 $start3 $period3 0 $brightness 0 0
+
+  # Step 2 - green
+  setTimer 2 $start2 $period2 0 0 $brightness 0
+
+  # Step 1 - blue
+  setTimer 1 $start1 $period1 0 0 0 $brightness
 }
 
 proc ambient {period start} {

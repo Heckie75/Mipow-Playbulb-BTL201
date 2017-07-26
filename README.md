@@ -97,6 +97,14 @@ Timer commands:
                                    <start>: starting time (optional)
                                             (hh:mm or in minutes)
 
+ bgr <minutes> [<start>] [<brightness>] 
+                                 - schedules blue-green-red program 
+                                   <minutes>: runtime in minutes 
+                                              best in steps of 4m 
+                                   <start>: starting time (optional)
+                                            (hh:mm or in minutes)
+                                   <brightness>: 0 - 255 (default: 255)
+
  random <start> <stop> <min> <max> [<white> <red> <green> <blue>]
                                  - schedules random mode
                                    <start>: start time 
@@ -357,6 +365,7 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 random off
 ```
 $./mipow.exp AF:66:4B:0D:AC:E6 wakeup 8
 $ ./mipow.exp AF:66:4B:0D:AC:E6 doze 60
+$ ./mipow.exp AF:66:4B:0D:AC:E6 bgr 60 0 64
 ```
 
 ### Set name
