@@ -100,7 +100,7 @@ Timer commands:
  bgr <minutes> [<start>] [<brightness>] 
                                  - schedules blue-green-red program 
                                    <minutes>: runtime in minutes 
-                                              best in steps of 4m 
+                                              best in steps of 4m, up to 1020m
                                    <start>: starting time (optional)
                                             (hh:mm or in minutes)
                                    <brightness>: 0 - 255 (default: 255)
