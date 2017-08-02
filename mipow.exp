@@ -121,7 +121,7 @@ set HELP(bgr) "\
  bgr <minutes> \[<start>\] \[<brightness>\] \n\
 \                                - schedules blue-green-red program \n\
 \                                  <minutes>: runtime in minutes \n\
-\                                             best in steps of 3m \n\
+\                                             best in steps of 4m, up to 1020m \n\
 \                                  <start>: starting time (optional)\n\
 \                                           (hh:mm or in minutes)\n\
 \                                  <brightness>: 0 - 255 (default: 255)"
