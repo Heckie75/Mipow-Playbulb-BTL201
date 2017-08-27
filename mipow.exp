@@ -1437,29 +1437,32 @@ proc doze {period start} {
 }
 
 proc bgr {period start brightness} {
+
+  set period [expr $period > 1440 ? 1440 : $period]
+  if {$period == 1440} {
+    set lap 480
+  } else {
+    set lap [expr round($period / 4)]
+  }
+	
+  set fade [expr $lap > 255 ? 255 : $lap]
+
   set start1 $start
-  set period1 [expr round($period / 4)]
-
-  set start2 [offsetTime $start1 $period1]
-  set period2 [expr round($period / 4)]
-
-  set start3 [offsetTime $start2 $period2]
-  set period3 [expr round($period / 4)]
-
-  set start4 [offsetTime $start3 $period3]
-  set period4 [expr round($period / 4)]
-
+  set start2 [offsetTime $start1 $lap]
+  set start3 [offsetTime $start2 $lap]
+  set start4 [offsetTime $start3 $lap]
+	
   # Step 4 - turn off
-  setTimer 4 $start4 $period4 0 0 0 0
+  setTimer 4 $start4 $fade 0 0 0 0
 
   # Step 3 - red
-  setTimer 3 $start3 $period3 0 $brightness 0 0
+  setTimer 3 $start3 $fade 0 $brightness 0 0
 
   # Step 2 - green
-  setTimer 2 $start2 $period2 0 0 $brightness 0
+  setTimer 2 $start2 $fade 0 0 $brightness 0
 
   # Step 1 - blue
-  setTimer 1 $start1 $period1 0 0 0 $brightness
+  setTimer 1 $start1 $fade 0 0 0 $brightness
 }
 
 proc ambient {period start} {
