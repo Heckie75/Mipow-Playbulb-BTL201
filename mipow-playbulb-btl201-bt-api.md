@@ -205,7 +205,7 @@ Clock:
 
 **Color and running time of timers (uuid = 0000fff8)**
 
-- Get: char-write-req 13
+- Get: char-read-hnd 13
 - Characteristic value/descriptor: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 - Set: (see chapter „write new timer) 
 
