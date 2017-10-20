@@ -40,12 +40,12 @@ Build-in effects:
                                    <hold>: 0 - 255 in 1/100s
 
  candle <hold> <white> <red> <green> <blue>
-                                 - run build-in candle effect hold <hold> - 
- change hold value of current effect
-                                   <hold>: 0 - 255ms per step halt - halt 
- build-in effect, keeps color
+                                 - run build-in candle effect
+                                   <hold>: 0 - 255ms per step
                                    color values: 0 - 255
-                                   
+
+ hold <hold>                     - change hold value of current effect
+
 Soft-effects which stay connected and run long:
 
  animate <hold> <white> <red> <green> <blue> 
