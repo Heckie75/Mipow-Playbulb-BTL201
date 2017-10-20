@@ -39,10 +39,13 @@ Build-in effects:
  disco <hold>                    - run build-in disco effect 
                                    <hold>: 0 - 255 in 1/100s
 
- hold <hold>                     - change hold value of current effect
-
- halt                            - halt build-in effect, keeps color
-
+ candle <hold> <white> <red> <green> <blue>
+                                 - run build-in candle effect hold <hold> - 
+ change hold value of current effect
+                                   <hold>: 0 - 255ms per step halt - halt 
+ build-in effect, keeps color
+                                   color values: 0 - 255
+                                   
 Soft-effects which stay connected and run long:
 
  animate <hold> <white> <red> <green> <blue> 

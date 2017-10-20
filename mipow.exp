@@ -76,6 +76,11 @@ set HELP(blink) "\
 set HELP(rainbow) "\
   rainbow <hold>                  - run build-in rainbow effect \n\
  \                                  <hold>: 0 - 255ms per step"
+set HELP(candle) "\
+  candle <hold> <white> <red> <green> <blue> \n\
+ \                                - run build-in candle effect \n\
+ \                                  <hold>: 0 - 255ms per step \n\
+ \                                  color values: 0 - 255"
 set HELP(disco) "\
   disco <hold>                    - run build-in disco effect \n\
  \                                  <hold>: 0 - 255 in 1/100s"
@@ -192,6 +197,7 @@ set EFFECTS(blink)           "00"
 set EFFECTS(pulse)           "01"
 set EFFECTS(disco)           "02"
 set EFFECTS(rainbow)         "03"
+set EFFECTS(candle)          "04"
 set EFFECTS(halt)            "ff"
 
 set TIMER_EFFECTS(off)       "04"
@@ -364,6 +370,7 @@ proc help {} {
   puts "$HELP(pulse)\n"
   puts "$HELP(blink)\n"
   puts "$HELP(rainbow)\n"
+  puts "$HELP(candle)\n"
   puts "$HELP(disco)\n"
   puts "$HELP(hold)\n"
   puts "$HELP(halt)"
@@ -1179,6 +1186,11 @@ proc doCommand {} {
       checkArgs $c 1 "rainbow" {^rainbow [0-9]+$}
       init 0
       setEffect "rainbow" [lindex $c 1] 0 0 0 0
+    }
+    ^candle* {
+      checkArgs $c 5 "candle" {^candle [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
+      init 0
+      setEffect "candle" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }
     ^disco* {
       checkArgs $c 1 "disco" {^disco [0-9]+$}
