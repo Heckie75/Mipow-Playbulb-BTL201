@@ -1451,10 +1451,12 @@ proc doze {period start} {
 proc bgr {period start brightness} {
 
   set period [expr $period > 1440 ? 1440 : $period]
-  if {$period == 1440} {
+  if {$period >= 1440} {
     set lap 480
+    set last_lap 479
   } else {
     set lap [expr round($period / 4)]
+    set last_lap $lap
   }
 	
   set fade [expr $lap > 255 ? 255 : $lap]
@@ -1462,11 +1464,12 @@ proc bgr {period start brightness} {
   set start1 $start
   set start2 [offsetTime $start1 $lap]
   set start3 [offsetTime $start2 $lap]
-  set start4 [offsetTime $start3 $lap]
-	
+  set start4 [offsetTime $start3 $last_lap]
+
+
   # Step 4 - turn off
   setTimer 4 $start4 $fade 0 0 0 0
-
+   
   # Step 3 - red
   setTimer 3 $start3 $fade 0 $brightness 0 0
 
