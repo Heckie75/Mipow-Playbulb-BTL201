@@ -142,7 +142,11 @@ set HELP(random) "\
  \                                  color values: 0 - 255 \n\n\
  random off                      - stop random mode"
 set HELP(status) "\
-  status                          - print full state of bulb"
+  status                          - print main information of bulb"
+set HELP(help) "\
+  help <command>                  - get help for specific command"
+set HELP(dump) "\
+  dump                            - dump full state of bulb"
 set HELP(name) "\
   name <name>                     - give bulb a new displayname / alias"
 set HELP(reset) "\
@@ -259,6 +263,7 @@ set bulb(timer_effect_hold_4)     "00"
 set bulb(prev_color)         "ff000000"
 set bulb(prev_effect)        "ff000000ff00ff00"
 
+# reads process ID from file if other process is running
 proc readPid {} {
   global pidfile
 
@@ -273,6 +278,19 @@ proc readPid {} {
   return $data
 }
 
+# cuts first string element in s
+proc lshift {s} {
+  set r ""
+  for {set i 1} {$i < [llength $s]} {incr i} {
+    if {$i > 1} {
+      append r " "
+    }
+    append r [lindex $s $i]
+  }
+  return $r
+}
+
+# logs output to file with process ID
 proc log {l} {
   global pidfile
 
@@ -285,6 +303,7 @@ proc log {l} {
   close $fp
 }
 
+# queues command in command file for interaction between processes
 proc sendCmd {cmd} {
   global cmdfile
 
@@ -298,6 +317,7 @@ proc sendCmd {cmd} {
   close $fp
 }
 
+# reads command from command file for interaction between processes
 proc readCmd {} {
   global cmdfile
 
@@ -315,6 +335,7 @@ proc readCmd {} {
   return $cmd
 }
 
+# initialises file with process id
 proc start {} {
   global pidfile
   global cmdfile
@@ -325,6 +346,7 @@ proc start {} {
   close $fp
 }
 
+# deletes temp files, i.e. command and process file
 proc cleanup {} {
   global pidfile
   global cmdfile
@@ -333,6 +355,7 @@ proc cleanup {} {
   file delete -force $pidfile
 }
 
+# stops other running bulb process
 proc stop {} {
   global pidfile
   global cmdfile
@@ -356,94 +379,95 @@ proc stop {} {
   }
 }
 
-proc help {} {
+# prints help output
+proc help {argv} {
   global HELP
-  puts $HELP(usage)
-  puts "\nBasic commands:\n"
-  puts $HELP(turnon)
-  puts $HELP(turnoff)
-  puts $HELP(toggle)
-  puts $HELP(color)
-  puts $HELP(turnup)
-  puts $HELP(dim)
-  puts "\nBuild-in effects:\n"
-  puts "$HELP(pulse)\n"
-  puts "$HELP(blink)\n"
-  puts "$HELP(rainbow)\n"
-  puts "$HELP(candle)\n"
-  puts "$HELP(disco)\n"
-  puts "$HELP(hold)\n"
-  puts "$HELP(halt)"
-  puts "\nSoft-effects which stay connected and run long:\n"
-  puts "$HELP(animate)\n"
-  puts "$HELP(triangle)\n"
-  puts $HELP(stop)
-  puts "\nTimer commands:\n"
-  puts "$HELP(timer)\n"
-  puts "$HELP(fade)\n"
-  puts "$HELP(ambient)\n"
-  puts "$HELP(wakeup)\n"
-  puts "$HELP(doze)\n"
-  puts "$HELP(bgr)\n"
-  puts "$HELP(random)"
-  puts "\nOther commands:\n"
-  puts $HELP(setup)
-  puts $HELP(name)
-  puts $HELP(status)
-  puts $HELP(reset)
-  puts ""
+
+  # print help for given command
+  if {[llength $argv] == 2 && [lindex $argv 0] == "help"} {
+    set command [lindex $argv 1]
+    puts $HELP(usage)
+
+    if {[info exists HELP($command)] == 1} {
+      puts "\n$HELP($command)\n"
+    } else {
+      puts "\nUnknown command <$command>.\n"
+    }
+    cleanup
+    exit 1
+  } elseif {[llength $argv] < 1 || [lindex $argv 0] == "help"} {
+    puts $HELP(usage)
+    puts "\nBasic commands:\n"
+    puts $HELP(status)
+    puts $HELP(turnon)
+    puts $HELP(turnoff)
+    puts $HELP(toggle)
+    puts $HELP(color)
+    puts $HELP(turnup)
+    puts $HELP(dim)
+    puts "\nBuild-in effects:\n"
+    puts "$HELP(pulse)\n"
+    puts "$HELP(blink)\n"
+    puts "$HELP(rainbow)\n"
+    puts "$HELP(candle)\n"
+    puts "$HELP(disco)\n"
+    puts "$HELP(hold)\n"
+    puts "$HELP(halt)"
+    puts "\nSoft-effects which stay connected and run long:\n"
+    puts "$HELP(animate)\n"
+    puts "$HELP(triangle)\n"
+    puts $HELP(stop)
+    puts "\nTimer commands:\n"
+    puts "$HELP(timer)\n"
+    puts "$HELP(fade)\n"
+    puts "$HELP(ambient)\n"
+    puts "$HELP(wakeup)\n"
+    puts "$HELP(doze)\n"
+    puts "$HELP(bgr)\n"
+    puts "$HELP(random)"
+    puts "\nOther commands:\n"
+    puts $HELP(help)
+    puts $HELP(setup)
+    puts $HELP(name)
+    puts $HELP(dump)
+    puts $HELP(reset)
+    puts ""
+    cleanup
+    exit 1
+  }
 }
 
-proc parseArgv {argv} {
+# prepare bulb
+proc prepareBulb {id} {
   global MAC_PATTERN
   global mac
-  global cmd
   global pidfile
   global cmdfile
   global hndfile
 
-  if {[llength $argv] < 2} {
-    help
-    exit
-  }
+  set mac [regexp "$MAC_PATTERN" $id]
 
-  set mac [lindex $argv 0]
-
-  set _mac [regexp "$MAC_PATTERN" $mac]
-
-  if { $_mac == 0 } {
+  if { $mac == 0 } {
     readKnownBulbs
-    lookupKnownBulbByName $mac
+    lookupKnownBulbByName $id
   }
 
   if { $mac == "" } {
-    puts "Bulb \"[lindex $argv 0]\" currently not known. Run setup before using alias."
+    puts "Bulb \"$id\" currently not known. Run setup before using alias."
     checkArgs "setup" 2 "setup" {^setup$}
   }
 
-  set _mac [regsub -all {[\:]+} $mac {-}]
+  set _mac [regsub -all {[\:]+} $id {-}]
   append pidfile "/tmp/bulb-" $_mac ".pid"
   append cmdfile "/tmp/bulb-" $_mac ".cmd"
   append hndfile "/tmp/bulb-" $_mac ".hnd"
-
-  set cmd ""
-  for {set i 1} {$i < [llength $argv]} {incr i} {
-    if {$i > 1} {
-      append cmd " "
-    }
-    append cmd [lindex $argv $i]
-  }
 }
 
 proc checkArgs {argv req command reg} {
   global HELP
   set check [regexp $reg [concat $argv]]
   if {[llength $argv] <= $req || $check == 0} {
-    puts $HELP(usage)
-    puts $HELP($command)
-    puts ""
-    cleanup
-    exit 1
+    help "help $command"
   }
 }
 
@@ -762,14 +786,20 @@ proc getRandomStatus {} {
   return $randstatus
 }
 
-proc getEffectName {effect} {
+proc getEffectName {effect debug} {
   global EFFECTS
+  set found "unknown"
   foreach key [lsort [array names EFFECTS]] {
     if {$effect == $EFFECTS($key)} {
-      return "$key ($effect)"
+      set found $key
+      break
     }
   }
-  return "unknown ($effect)"
+  if {$debug == 1} {
+    set found "$found ($effect)"
+  }
+
+  return $found
 }
 
 proc getTimerType {type} {
@@ -833,7 +863,7 @@ proc dumpBulb {} {
   append out "White / Red / Green / Blue: [colorToString $bulb(color)]\n"
   append out "\n"
   append out "Current effect ($HANDLES(effect)):      $bulb(effect)\n"
-  append out "Effect:                     [getEffectName $bulb(effect_effect)]\n"
+  append out "Effect:                     [getEffectName $bulb(effect_effect) 1]\n"
   append out "Effect color:               [colorToString $bulb(effect_color)]\n"
   append out "Effect time (raw):          $bulb(effect_hold)\n"
   append out "Effect time (approx.):      [holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\n"
@@ -863,6 +893,45 @@ proc dumpBulb {} {
     append out "Randommode min.:            [hexToDecimal $bulb(randommode_min)] minutes\n"
     append out "Randommode max.:            [hexToDecimal $bulb(randommode_max)] minutes\n"
     append out "Randommode color:           [colorToString $bulb(randommode_color)]\n"
+  }
+
+  puts $out
+}
+
+proc printStatus {} {
+  global HANDLES
+  global EFFECTS
+  global bulb
+
+  set out "\n"
+
+  if {$bulb(effect_effect) == $EFFECTS(halt)} {
+    append out "Light:      [colorToString $bulb(color)]\n"
+  } else {
+    append out "Effect:     [getEffectName $bulb(effect_effect) 0], [colorToString $bulb(effect_color)], [holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\n"
+  }
+
+  append out "\n"
+
+  set planned_timers 0
+  for {set i 0} {$i < 4} {incr i} {
+    if {$bulb("timer_time_$i") == "ffff"} {
+      continue
+    }
+    incr planned_timers
+
+    append out "Timer [expr $i + 1]:    [hexToTime $bulb("timer_time_$i")], [colorToString $bulb("timer_effect_color_$i")], [hexToDecimal $bulb("timer_effect_hold_$i")]m\n"
+  }
+
+  set randstatus [getRandomStatus]
+
+  if {$randstatus != "off"} {
+    incr planned_timers
+    append out "\nRandommode: [hexToTime $bulb(randommode_start)] - [hexToTime $bulb(randommode_stop)], [colorToString $bulb(randommode_color)], [hexToDecimal $bulb(randommode_min)] - [hexToDecimal $bulb(randommode_max)]m\n"
+  }
+
+  if {$planned_timers > 0} {
+    append out "\nTime:       [hexToTime $bulb(time)]\n"
   }
 
   puts $out
@@ -1129,6 +1198,10 @@ proc doCommand {} {
 
   switch -regexp $c {
     ^status$ {
+      init [expr $INIT(color) + $INIT(effect) + $INIT(timers)]
+      printStatus
+    }
+    ^dump$ {
       init [expr $INIT(device) + $INIT(color) + $INIT(effect) + $INIT(timers)]
       dumpBulb
     }
@@ -1237,13 +1310,13 @@ proc doCommand {} {
       checkArgs $c 1 "bgr" {^bgr [0-9]+ ?[0-9]*[:0-9]* ?[0-9]*$}
       init 0
       if {[llength $c] > 3} {
-	bgr [lindex $c 1] [lindex $c 2] [lindex $c 3]
+        bgr [lindex $c 1] [lindex $c 2] [lindex $c 3]
       } elseif {[llength $c] > 2} {
-	bgr [lindex $c 1] [lindex $c 2] 255
+        bgr [lindex $c 1] [lindex $c 2] 255
       } else {
-	bgr [lindex $c 1] 0 255
+        bgr [lindex $c 1] 0 255
       }
-    }	  
+    }
     ^fade* {
       checkArgs $c 1 "fade" {^fade [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
@@ -1294,7 +1367,7 @@ proc doCommand {} {
       setup
     }
     ^.*$ {
-      help
+      help ""
     }
   }
 }
@@ -1458,7 +1531,7 @@ proc bgr {period start brightness} {
     set lap [expr round($period / 4)]
     set last_lap $lap
   }
-	
+
   set fade [expr $lap > 255 ? 255 : $lap]
 
   set start1 $start
@@ -1469,7 +1542,7 @@ proc bgr {period start brightness} {
 
   # Step 4 - turn off
   setTimer 4 $start4 $fade 0 0 0 0
-   
+
   # Step 3 - red
   setTimer 3 $start3 $fade 0 $brightness 0 0
 
@@ -1547,13 +1620,23 @@ proc delay {delay} {
   return 1
 }
 
-parseArgv $argv
+
+##### main #####
+
+help $argv
+
+prepareBulb [lindex $argv 0]
 
 stop
 cleanup
 start
 
 spawn -noecho /usr/bin/gatttool -I
+
+set cmd [lshift $argv]
+if {$cmd == ""} {
+  set cmd "status"
+}
 
 while {$cmd != ""} {
   doCommand

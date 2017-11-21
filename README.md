@@ -13,6 +13,7 @@ Usage: <mac/alias> <command> <parameters...>
 
 Basic commands:
 
+ status                          - print main information of bulb
  on                              - turn on light (white)
  off                             - turn off light
  toggle                          - turn off / on (remembers color!)
@@ -122,6 +123,8 @@ Timer commands:
 
 Other commands:
 
+ help <command>                  - get help for specific command
+ dump                            - dump full state of bulb
  setup                           - setup bulb for this program
  name <name>                     - give bulb a new displayname / alias
  status                          - print full state of bulb
@@ -207,7 +210,7 @@ In order to be able to distinguish multiple bulbs you should rename your bulb.
 $ ./mipow.exp AF:66:4B:0D:AC:E6 name Livingroom
 ```
 
-4. Check status of bulb
+4. Dump full status of bulb
 
 ```
 $ ./mipow.exp Liv status
@@ -304,6 +307,19 @@ $ ./mipow.exp help
 
 ...
 
+
+$ ./mipow.exp help color
+
+Usage: <mac/alias> <command> <parameters...>
+                                   <mac>: bluetooth mac address of bulb
+                                   <alias>: you can use alias instead of mac address 
+                                            after you have run setup (see setup) 
+                                   <command>: For command and parameters
+
+ color <white> <red> <green> <blue> 
+                                 - set color, each value 0 - 255
+
+
 $ ./mipow.exp Liv color
 Usage: <mac/alias> <command> <parameters...>
                                    <mac>: bluetooth mac address of bulb
@@ -313,6 +329,28 @@ Usage: <mac/alias> <command> <parameters...>
  color <white> <red> <green> <blue> 
                                  - set color, each value 0 - 255
 ```
+
+
+### Print status of bulb
+```
+$ ./mipow.exp AF:66:4B:0D:AC:E6 status
+
+
+Effect:     blink, WRGB(0,255,0,0), 5.1 sec, 0.196 Hz, 11.76 bpm
+
+Timer 1:    14:51, WRGB(0,0,0,25), 30m
+Timer 3:    15:51, WRGB(0,25,0,0), 30m
+Timer 4:    16:21, off, 30m
+
+Time:       12:54
+```
+
+**Note:** Status is optional. The following has the same result: 
+```
+$ ./mipow.exp AF:66:4B:0D:AC:E6
+...
+```
+
 
 ### Set color
 ```
