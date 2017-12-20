@@ -457,7 +457,7 @@ proc prepareBulb {id} {
     checkArgs "setup" 2 "setup" {^setup$}
   }
 
-  set _mac [regsub -all {[\:]+} $id {-}]
+  set _mac [regsub -all {[\:]+} $mac {-}]
   append pidfile "/tmp/bulb-" $_mac ".pid"
   append cmdfile "/tmp/bulb-" $_mac ".cmd"
   append hndfile "/tmp/bulb-" $_mac ".hnd"
@@ -525,7 +525,7 @@ proc initHandles {} {
   global HELP
   global hndfile
 
-  if {[file exists $hndfile] == 0} {
+  if {[file exists $hndfile] == 0 || [file size $hndfile] == 0} {
     setupCharacteristics
   }
 
