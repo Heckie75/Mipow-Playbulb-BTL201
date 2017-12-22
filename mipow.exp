@@ -445,9 +445,11 @@ proc prepareBulb {id} {
   global cmdfile
   global hndfile
 
-  set mac [regexp "$MAC_PATTERN" $id]
+  set is_mac [regexp "$MAC_PATTERN" $id]
 
-  if { $mac == 0 } {
+  if {$is_mac == 1 } {
+    set mac $id
+  } else {
     readKnownBulbs
     lookupKnownBulbByName $id
   }
