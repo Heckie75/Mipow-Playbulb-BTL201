@@ -452,7 +452,7 @@ proc prepareBulb {id} {
   } else {
     readKnownBulbs
     lookupKnownBulbByName $id
-  }
+  } 
 
   if { $mac == "" } {
     puts "Bulb \"$id\" currently not known. Run setup before using alias."
