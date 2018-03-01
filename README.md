@@ -1,10 +1,19 @@
 # Mipow-Playbulb-BTL201
-Full-featured shell script interface based on expect and gatttool for Mipow Playbulb. It has been tested with the following models:
+Full-featured shell script interface based on expect and gatttool for Mipow Playbulb. It is (should be compatible) with the following models:
 * Mipow Playbulb Rainbow (BTL200), tested rev. BTL200_v7 / Application version 2.4.3.26
 * Mipow Playbulb Smart (BTL201), tested rev. BTL201_v2 / Application version 2.4.3.26
 
-Other users reported that it is also compatible with:
-* Mipow Playbulb Candle (BTL300)
+* Mipow Playbulb Spot (BTL203), untested, unconfirmed, feedback is welcome!
+* Mipow Playbulb Candle (BTL300), untested, confirmed by other users
+* MiPow Playbulb Sphere (BTL301W), untested, unconfirmed, feedback is welcome!
+* MiPow Playbulb Garden (BTL400), untested, unconfirmed, feedback is welcome!
+* MiPow Playbulb Comet (BTL501A), untested, unconfirmed, feedback is welcome!
+* MiPow Playbulb String (BTL505-GN), untested, unconfirmed, feedback is welcome!
+* MiPow Playbulb Solar (BTL601), untested, unconfirmed, feedback is welcome!
+
+This script is NOT compatible with bulbs of series BTL1xx:
+* MiPow Playbulb Lite (BTL100S)
+* MiPow Playbulb Color (BTL100C)
 
 This script allows to control Mipow PLaybulbs via bluetooth BLE (low energy, version 4) with the Raspberry Pi's Raspian and other Linux distributions.   
 
