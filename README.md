@@ -1,9 +1,11 @@
 # Mipow-Playbulb-BTL201
 Full-featured shell script interface based on expect and gatttool for Mipow Playbulb. It is (should be compatible) with the following models:
-* Mipow Playbulb Rainbow (BTL200), tested rev. BTL200_v7 / Application version 2.4.3.26
-* Mipow Playbulb Smart (BTL201), tested rev. BTL201_v2 / Application version 2.4.3.26
+* Mipow Playbulb Rainbow (BTL200), tested rev. BTL200_v7 / Application version 2.4.3.26 (no candle effect)
+* Mipow Playbulb Smart (BTL201), tested rev. BTL201_v2 / Application version 2.4.3.26 (no candle effect)
 
-* Mipow Playbulb Spot (BTL203), untested, unconfirmed, feedback is welcome!
+* Mipow Playbulb Spot Mesh (BTL203), tested rev. BTL203M_V1.6 / Application version 2.4.5.13 (no candle effect, remembers whole state, light, effect etc. after power off!)
+
+Not tested yet:
 * Mipow Playbulb Candle (BTL300), untested, confirmed by other users
 * MiPow Playbulb Sphere (BTL301W), untested, unconfirmed, feedback is welcome!
 * MiPow Playbulb Garden (BTL400), untested, unconfirmed, feedback is welcome!
