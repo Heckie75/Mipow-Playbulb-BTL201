@@ -149,6 +149,8 @@ set HELP(dump) "\
   dump                            - dump full state of bulb"
 set HELP(name) "\
   name <name>                     - give bulb a new displayname / alias"
+set HELP(password) "\
+  password <abcd>                 - set password"
 set HELP(reset) "\
   reset                           - perform factory reset"
 set HELP(setup) "\
@@ -180,6 +182,7 @@ set CHARACTERISTIC(fffd)     "reset"
 set CHARACTERISTIC(fffc)     "color"
 set CHARACTERISTIC(fffb)     "effect"
 set CHARACTERISTIC(fffe)     "timersettings"
+set CHARACTERISTIC(fff7)     "devpassword"
 set CHARACTERISTIC(fff8)     "timereffects"
 set CHARACTERISTIC(fff9)     "randommode"
 
@@ -216,6 +219,7 @@ set bulb(devvendor)          ""
 set bulb(devsoftware)        ""
 set bulb(devcpu)             ""
 set bulb(devname)            ""
+set bulb(devpassword)        "0000"
 set bulb(color)              "00000000"
 set bulb(color_white)        "00"
 set bulb(color_red)          "00"
@@ -396,41 +400,42 @@ proc help {argv} {
     cleanup
     exit 1
   } elseif {[llength $argv] < 1 || [lindex $argv 0] == "help"} {
-    puts $HELP(usage)
+    puts "$HELP(usage)\n"
     puts "\nBasic commands:\n"
-    puts $HELP(status)
-    puts $HELP(turnon)
-    puts $HELP(turnoff)
-    puts $HELP(toggle)
-    puts $HELP(color)
-    puts $HELP(turnup)
-    puts $HELP(dim)
+    puts "$HELP(status)"
+    puts "$HELP(turnon)"
+    puts "$HELP(turnoff)"
+    puts "$HELP(toggle)"
+    puts "$HELP(color)"
+    puts "$HELP(turnup)"
+    puts "$HELP(dim)\n"
     puts "\nBuild-in effects:\n"
-    puts "$HELP(pulse)\n"
-    puts "$HELP(blink)\n"
-    puts "$HELP(rainbow)\n"
-    puts "$HELP(candle)\n"
-    puts "$HELP(disco)\n"
-    puts "$HELP(hold)\n"
-    puts "$HELP(halt)"
+    puts "$HELP(pulse)"
+    puts "$HELP(blink)"
+    puts "$HELP(rainbow)"
+    puts "$HELP(candle)"
+    puts "$HELP(disco)"
+    puts "$HELP(hold)"
+    puts "$HELP(halt)\n"
     puts "\nSoft-effects which stay connected and run long:\n"
-    puts "$HELP(animate)\n"
-    puts "$HELP(triangle)\n"
-    puts $HELP(stop)
+    puts "$HELP(animate)"
+    puts "$HELP(triangle)"
+    puts "$HELP(stop)\n"
     puts "\nTimer commands:\n"
-    puts "$HELP(timer)\n"
-    puts "$HELP(fade)\n"
-    puts "$HELP(ambient)\n"
-    puts "$HELP(wakeup)\n"
-    puts "$HELP(doze)\n"
-    puts "$HELP(bgr)\n"
-    puts "$HELP(random)"
+    puts "$HELP(timer)"
+    puts "$HELP(fade)"
+    puts "$HELP(ambient)"
+    puts "$HELP(wakeup)"
+    puts "$HELP(doze)"
+    puts "$HELP(bgr)"
+    puts "$HELP(random)\n"
     puts "\nOther commands:\n"
-    puts $HELP(help)
-    puts $HELP(setup)
-    puts $HELP(name)
-    puts $HELP(dump)
-    puts $HELP(reset)
+    puts "$HELP(help)"
+    puts "$HELP(setup)"
+    puts "$HELP(name)"
+    puts "$HELP(password)"
+    puts "$HELP(dump)"
+    puts "$HELP(reset)"
     puts ""
     cleanup
     exit 1
@@ -582,6 +587,7 @@ proc readDeviceInfo {} {
   global HANDLES
   global bulb
   set bulb(devname) [hexToASCII [readBulb $HANDLES(devname)]]
+  set bulb(devpassword) [hexToASCII [readBulb $HANDLES(devpassword)]]
   set bulb(devvendor) [hexToASCII [readBulb $HANDLES(devvendor)]]
   set bulb(devid) [hexToASCII [readBulb $HANDLES(devid)]]
   set bulb(devversion) [hexToASCII [readBulb $HANDLES(devversion)]]
@@ -855,6 +861,7 @@ proc dumpBulb {} {
   set out "\n"
   append out "Device mac:                 $bulb(mac)\n"
   append out "Device name ($HANDLES(devname)):         $bulb(devname)\n"
+  append out "Device password ($HANDLES(devpassword)):     $bulb(devpassword)\n"
   append out "Device vendor ($HANDLES(devvendor)):       $bulb(devvendor)\n"
   append out "Device id ($HANDLES(devid)):           $bulb(devid)\n"
   append out "Device version ($HANDLES(devversion)):      $bulb(devversion)\n"
@@ -1086,6 +1093,14 @@ proc setBulbName {name} {
   set bulb(devname) $name
 
   storeKnownBulbs
+}
+
+proc setBulbPassword {password} {
+  global HANDLES
+  global bulb
+
+  playBulb $HANDLES(devpassword) [asciiToHex $password] req
+  set bulb(devpassword) $password
 }
 
 proc reset {} {
@@ -1357,6 +1372,11 @@ proc doCommand {} {
       checkArgs $c 1 "name" {^name .+$}
       init 0
       setBulbName [lrange [concat $c] 1 end]
+    }
+    ^password* {
+      checkArgs $c 1 "password" {^password .{4}$}
+      init 0
+      setBulbPassword [lrange [concat $c] 1 end]
     }
     ^reset$ {
       init 0
