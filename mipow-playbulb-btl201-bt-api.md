@@ -32,10 +32,11 @@ Here is a table of UUIDs and their meaning. Maybe there are other bulbs which ha
 | 0000fffc | color |
 | 0000fffb | effect |
 | 0000fffe | timer settings |
+| 0000fff7 | PIN/Password (set in official app) |
 | 0000fff8 | timer effects |
 | 0000fff9 | random mode |
 
-Full output of `characteristcs` for my bulb:
+Full output of `characteristcs` for Mipow Playbulb Smart (BTL201):
 ```
 handle = 0x0002, char properties = 0x0a, char value handle = 0x0003, uuid = 00002a00-0000-1000-8000-00805f9b34fb
 handle = 0x0004, char properties = 0x02, char value handle = 0x0005, uuid = 00002a01-0000-1000-8000-00805f9b34fb
@@ -62,6 +63,43 @@ handle = 0x0034, char properties = 0x0a, char value handle = 0x0035, uuid = 0000
 handle = 0x0036, char properties = 0x08, char value handle = 0x0037, uuid = 00001018-d102-11e1-9b23-00025b00a5a5
 handle = 0x0038, char properties = 0x12, char value handle = 0x0039, uuid = 00001014-d102-11e1-9b23-00025b00a5a5
 handle = 0x003b, char properties = 0x02, char value handle = 0x003c, uuid = 00001011-d102-11e1-9b23-00025b00a5a5
+```
+
+Full output of `characteristcs` for Mipow Playbulb Spot Mesh (BTL203):
+```
+handle: 0x0002, char properties: 0x20, char value handle: 0x0003, uuid: 00002a05-0000-1000-8000-00805f9b34fb
+handle: 0x0006, char properties: 0x0a, char value handle: 0x0007, uuid: 00002a00-0000-1000-8000-00805f9b34fb
+handle: 0x0008, char properties: 0x02, char value handle: 0x0009, uuid: 00002a01-0000-1000-8000-00805f9b34fb
+handle: 0x000a, char properties: 0x02, char value handle: 0x000b, uuid: 00002a04-0000-1000-8000-00805f9b34fb
+handle: 0x000d, char properties: 0x0a, char value handle: 0x000e, uuid: 00001013-d102-11e1-9b23-00025b00a5a5
+handle: 0x000f, char properties: 0x08, char value handle: 0x0010, uuid: 00001018-d102-11e1-9b23-00025b00a5a5
+handle: 0x0011, char properties: 0x12, char value handle: 0x0012, uuid: 00001014-d102-11e1-9b23-00025b00a5a5
+handle: 0x0014, char properties: 0x02, char value handle: 0x0015, uuid: 00001011-d102-11e1-9b23-00025b00a5a5
+handle: 0x0017, char properties: 0x10, char value handle: 0x0018, uuid: 00002a37-0000-1000-8000-00805f9b34fb
+handle: 0x001a, char properties: 0x08, char value handle: 0x001b, uuid: 00001234-0000-1000-8000-00805f9b34fb
+handle: 0x001c, char properties: 0x0a, char value handle: 0x001d, uuid: 0000fff7-0000-1000-8000-00805f9b34fb
+handle: 0x001e, char properties: 0x02, char value handle: 0x001f, uuid: 0000fff8-0000-1000-8000-00805f9b34fb
+handle: 0x0020, char properties: 0x0a, char value handle: 0x0021, uuid: 0000fff9-0000-1000-8000-00805f9b34fb
+handle: 0x0022, char properties: 0x06, char value handle: 0x0023, uuid: 0000fffb-0000-1000-8000-00805f9b34fb
+handle: 0x0024, char properties: 0x06, char value handle: 0x0025, uuid: 0000fffc-0000-1000-8000-00805f9b34fb
+handle: 0x0026, char properties: 0x0a, char value handle: 0x0027, uuid: 0000fffd-0000-1000-8000-00805f9b34fb
+handle: 0x0028, char properties: 0x0a, char value handle: 0x0029, uuid: 0000fffe-0000-1000-8000-00805f9b34fb
+handle: 0x002a, char properties: 0x0a, char value handle: 0x002b, uuid: 0000ffff-0000-1000-8000-00805f9b34fb
+handle: 0x002c, char properties: 0x0a, char value handle: 0x002d, uuid: 0000fff5-0000-1000-8000-00805f9b34fb
+handle: 0x002f, char properties: 0x12, char value handle: 0x0030, uuid: 00002a19-0000-1000-8000-00805f9b34fb
+handle: 0x0033, char properties: 0x08, char value handle: 0x0034, uuid: c4edc000-9daf-11e3-8000-00025b000b00
+handle: 0x0035, char properties: 0x02, char value handle: 0x0036, uuid: c4edc000-9daf-11e3-8001-00025b000b00
+handle: 0x0037, char properties: 0x0a, char value handle: 0x0038, uuid: c4edc000-9daf-11e3-8002-00025b000b00
+handle: 0x0039, char properties: 0x1c, char value handle: 0x003a, uuid: c4edc000-9daf-11e3-8003-00025b000b00
+handle: 0x003c, char properties: 0x1c, char value handle: 0x003d, uuid: c4edc000-9daf-11e3-8004-00025b000b00
+handle: 0x003f, char properties: 0x0a, char value handle: 0x0040, uuid: c4edc000-9daf-11e3-8005-00025b000b00
+handle: 0x0041, char properties: 0x0a, char value handle: 0x0042, uuid: c4edc000-9daf-11e3-8006-00025b000b00
+handle: 0x0044, char properties: 0x02, char value handle: 0x0045, uuid: 00002a25-0000-1000-8000-00805f9b34fb
+handle: 0x0046, char properties: 0x02, char value handle: 0x0047, uuid: 00002a27-0000-1000-8000-00805f9b34fb
+handle: 0x0048, char properties: 0x02, char value handle: 0x0049, uuid: 00002a26-0000-1000-8000-00805f9b34fb
+handle: 0x004a, char properties: 0x02, char value handle: 0x004b, uuid: 00002a28-0000-1000-8000-00805f9b34fb
+handle: 0x004c, char properties: 0x02, char value handle: 0x004d, uuid: 00002a29-0000-1000-8000-00805f9b34fb
+handle: 0x004e, char properties: 0x02, char value handle: 0x004f, uuid: 00002a50-0000-1000-8000-00805f9b34fb
 ```
 
 **Note: The handles mentioned below are meant for my bulb. Therefore you have to check the characteristics of your device by running the "characteristics" command in gatttool.**
@@ -110,7 +148,18 @@ handle = 0x003b, char properties = 0x02, char value handle = 0x003c, uuid = 0000
 - Set: char-write-req 3 4142434445464748494a4b4c4d4e4f
 - Set: char-write-req 21 4142434445464748494a4b4c4d4e4f
 
-*Note:* This seems to be the only value that will be kept after you have disconnected the bulb from power. 
+*Note:* This is the only value that Mipow Playbulb Rainbow (BTL200) and Playbulb SMART (BTL201) seems to kept after you have disconnected the bulb from power. Mipow Playbulb Spot Mesh (BTL203) remembers the whole state, light, effect etc. 
+
+**The given PIN/password of the bulb (uuid = 0000fff7)**
+- Default value: "0000"
+- Get: char-read-hnd 1d
+- Characteristic value/descriptor: 30 30 30 30
+- Set: char-write-req 1d 41424344
+- which is ABCD
+
+*Note:* This is at least NOT available for Rainbow (BTL200) and Playbulb SMART (BTL201). Mipow Playbulb Spot Mesh (BTL203) supports PIN
+
+*Note:* This is the only value that Mipow Playbulb Rainbow (BTL200) and Playbulb SMART (BTL201) seems to kept after you have disconnected the bulb from power. Mipow Playbulb Spot Mesh (BTL203) remembers the whole state, light, effect etc. 
 
 ## Color
 The color of the bulb. Can also be used in order to read current color, in case that effect runs. 
