@@ -331,9 +331,6 @@ Example:
 
 The MIPOW Playbulb has an internal clock. Unfortunately it only runs in case that at least one timer is scheduled.
 
-## Password (n/a)
-Although according the app it should be possible to set a password for the bulb it does not work with my bulb.
-
 ## Factory Reset (uuid = 0000fffd)
 
 A factory reset can be performed by sending the value 3 to handle 1d in request-mode (instead of command mode). 
