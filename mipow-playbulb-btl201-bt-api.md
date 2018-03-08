@@ -204,7 +204,7 @@ Note: Although according the app there is an additional effect called „candle�
 - Set: char-write-cmd 19 00000000ff00ff00
 
 - Byte: 1 to 4: Color of effect, current color, values are persisted even if effect stops (can be written in order to remember previous color after bulb has been soft-turned off in order to be able to toggle to colors before – must be programmed by yourself of course)
-- Byte 5: Effect (blink=00, pulse=01, hard rainbow=02, smooth rainbow=03, halt=ff)
+- Byte 5: Effect (blink=00, pulse=01, hard rainbow=02, smooth rainbow=03, candle=04, halt=ff)
 - Byte 6: no special meaning, always „ff“, use „00“ if you set handle
 - Byte 7: Delay of the effect in hex
 - Byte 8: no special meaning, always „ff“, use „00“ if you set handle
