@@ -1,4 +1,24 @@
-# Mipow Playbulb BTL201 Bluetooth API
+# Mipow Playbulb  Bluetooth API
+
+This API is at least compatible to the following models:
+* Mipow Playbulb Rainbow (BTL200), tested rev. BTL200_v7 / Application version 2.4.3.26 (no candle effect, no password)
+* Mipow Playbulb Smart (BTL201), tested rev. BTL201_v2 / Application version 2.4.3.26 (no candle effect, no password)
+
+* Mipow Playbulb Spot Mesh (BTL203), tested rev. BTL203M_V1.6 / Application version 2.4.5.13 (remembers whole state, light, effect etc. after power off!)
+
+Not tested yet:
+* Mipow Playbulb Candle (BTL300), untested, confirmed by other users
+* MiPow Playbulb Sphere (BTL301W), untested, unconfirmed, feedback is welcome!
+* MiPow Playbulb Garden (BTL400), untested, unconfirmed, feedback is welcome!
+* MiPow Playbulb Comet (BTL501A), untested, unconfirmed, feedback is welcome!
+* MiPow Playbulb String (BTL505-GN), untested, unconfirmed, feedback is welcome!
+* MiPow Playbulb Solar (BTL601), untested, unconfirmed, feedback is welcome!
+
+This API is very likely NOT compatible with bulbs of series BTL1xx:
+* MiPow Playbulb Lite (BTL100S)
+* MiPow Playbulb Color (BTL100C)
+
+
 ## Characteristics
 
 _"Mipow bulbs are all equal. But some bulbs are more equal than others."_
@@ -158,8 +178,6 @@ handle: 0x004e, char properties: 0x02, char value handle: 0x004f, uuid: 00002a50
 - which is ABCD
 
 *Note:* This is at least NOT available for Rainbow (BTL200) and Playbulb SMART (BTL201). Mipow Playbulb Spot Mesh (BTL203) supports PIN
-
-*Note:* This is the only value that Mipow Playbulb Rainbow (BTL200) and Playbulb SMART (BTL201) seems to kept after you have disconnected the bulb from power. Mipow Playbulb Spot Mesh (BTL203) remembers the whole state, light, effect etc. 
 
 ## Color
 The color of the bulb. Can also be used in order to read current color, in case that effect runs. 
