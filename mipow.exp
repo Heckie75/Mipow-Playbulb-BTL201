@@ -1112,8 +1112,14 @@ proc setBulbPassword {password} {
   global HANDLES
   global bulb
 
-  playBulb $HANDLES(devpassword) [asciiToHex $password] req
-  set bulb(devpassword) $password
+  if { [info exists HANDLES(devpassword] } {
+    playBulb $HANDLES(devpassword) [asciiToHex $password] req
+    set bulb(devpassword) $password
+  } else {
+    puts "\nDevice does not support password feature.\n"
+    cleanup
+    exit 1
+  }
 }
 
 proc reset {} {
