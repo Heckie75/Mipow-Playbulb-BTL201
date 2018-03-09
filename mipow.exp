@@ -189,6 +189,8 @@ set CHARACTERISTIC(fff9)     "randommode"
 set MAC_PATTERN              "\[0-9A-F]{2}:\[0-9A-F]{2}:\[0-9A-F]{2}:\[0-9A-F]{2}:\[0-9A-F]{2}:\[0-9A-F]{2}"
 set KNOWN_BULBS_FILE         "~/.known_bulbs"
 array set HANDLES            {}
+set BASIC_HANDLES            8
+
 
 array set knownBulbs         {}
 
@@ -528,6 +530,7 @@ proc init {level} {
 
 proc initHandles {} {
   global HANDLES
+  global BASIC_HANDLES
   global CHARACTERISTIC
   global HELP
   global hndfile
@@ -554,7 +557,7 @@ proc initHandles {} {
 
   close $fp
 
-  if { [array size HANDLES] != [array size CHARACTERISTIC] } {
+  if { [array size HANDLES] < $BASIC_HANDLES } {
     puts "ERROR: Handles of your bulb are not initialized yet or incorrectly. Re-run setup!\n"
     checkArgs "setup" 2 "setup" {^setup$}
   }
@@ -587,7 +590,11 @@ proc readDeviceInfo {} {
   global HANDLES
   global bulb
   set bulb(devname) [hexToASCII [readBulb $HANDLES(devname)]]
-  set bulb(devpassword) [hexToASCII [readBulb $HANDLES(devpassword)]]
+  
+  if { [info exists HANDLES(devpassword)] } {
+    set bulb(devpassword) [hexToASCII [readBulb $HANDLES(devpassword)]]
+  } 
+
   set bulb(devvendor) [hexToASCII [readBulb $HANDLES(devvendor)]]
   set bulb(devid) [hexToASCII [readBulb $HANDLES(devid)]]
   set bulb(devversion) [hexToASCII [readBulb $HANDLES(devversion)]]
@@ -861,7 +868,13 @@ proc dumpBulb {} {
   set out "\n"
   append out "Device mac:                 $bulb(mac)\n"
   append out "Device name ($HANDLES(devname)):         $bulb(devname)\n"
-  append out "Device password ($HANDLES(devpassword)):     $bulb(devpassword)\n"
+  
+  if { [info exists HANDLES(devpassword)] } {
+    append out "Device password ($HANDLES(devpassword)):     $bulb(devpassword)\n"
+  } else {
+    append out "Device password             (not supported)\n"
+  }
+  
   append out "Device vendor ($HANDLES(devvendor)):       $bulb(devvendor)\n"
   append out "Device id ($HANDLES(devid)):           $bulb(devid)\n"
   append out "Device version ($HANDLES(devversion)):      $bulb(devversion)\n"
