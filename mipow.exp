@@ -979,10 +979,10 @@ proc dumpBulbToJson {} {
     append out "    \"min\" : \"[hexToDecimal $bulb(randommode_min)]\",\n"
     append out "    \"max\" : \"[hexToDecimal $bulb(randommode_max)]\",\n"
     append out "    \"color\" : \"[colorToString $bulb(randommode_color)]\"\n"
-    append out "  \}\n"
   } else {
-    append out "    \"status\" : \"$randstatus\""
+    append out "    \"status\" : \"$randstatus\"\n"
   }
+  append out "  \}\n"
   append out "\}\n"
   puts $out
 }
