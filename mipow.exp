@@ -147,6 +147,8 @@ set HELP(help) "\
   help <command>                  - get help for specific command"
 set HELP(dump) "\
   dump                            - dump full state of bulb"
+set HELP(json) "\
+  json                            - dump full state of bulb in json format"
 set HELP(name) "\
   name <name>                     - give bulb a new displayname / alias"
 set HELP(password) "\
@@ -437,6 +439,7 @@ proc help {argv} {
     puts "$HELP(name)"
     puts "$HELP(password)"
     puts "$HELP(dump)"
+    puts "$HELP(json)"
     puts "$HELP(reset)"
     puts ""
     cleanup
@@ -920,6 +923,70 @@ proc dumpBulb {} {
   puts $out
 }
 
+proc dumpBulbToJson {} {
+  global HANDLES
+  global bulb
+
+  set out "\{\n"
+  append out "  \"device\" : \{\n"
+  append out "    \"mac\" : \"$bulb(mac)\",\n"
+  append out "    \"name\" : \"$bulb(devname)\",\n"
+
+  if { [info exists HANDLES(devpassword)] } {
+    append out "    \"password\" : \"$bulb(devpassword)\",\n"
+  }
+
+  append out "    \"vendor\" : \"$bulb(devvendor)\",\n"
+  append out "    \"id\" : \"$bulb(devid)\",\n"
+  append out "    \"version\" : \"$bulb(devversion)\",\n"
+  append out "    \"software\" : \"$bulb(devsoftware)\",\n"
+  append out "    \"cpu\" : \"$bulb(devcpu)\"\n"
+  append out "  \},\n"
+  append out "  \"state\" : \{\n"
+  append out "    \"color\" : \"[colorToString $bulb(color)]\",\n"
+  append out "    \"effect\" : \{\n"
+  append out "      \"effect\" : \"[getEffectName $bulb(effect_effect) 1]\",\n"
+  append out "      \"color\" : \"[colorToString $bulb(effect_color)]\",\n"
+  append out "      \"time\" : \{\n"
+  append out "        \"raw\" : \"$bulb(effect_hold)\",\n"
+  append out "        \"human\" : \"[holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\"\n"
+  append out "      \}\n"
+  append out "    \},\n"
+  append out "    \"time\" : \"[hexToTime $bulb(time)]\"\n"
+  append out "  \},\n"
+
+  append out "  \"timer\" : \[\n"
+  for {set i 0} {$i < 4} {incr i} {
+    append out "    \{\n"
+    append out "      \"type\" : \"[getTimerType $bulb("timer_type_$i")]\",\n"
+    append out "      \"start\" : \"[hexToTime $bulb("timer_time_$i")]\",\n"
+    append out "      \"runtime\" : \"[hexToDecimal $bulb("timer_effect_hold_$i")]\",\n"
+    append out "      \"color\" : \"[colorToString $bulb("timer_effect_color_$i")]\"\n"
+    if { $i < 3 } {
+      append out "    \},\n"
+    } else {
+      append out "    \}\n"
+    }
+  }
+  append out "  \],\n"
+
+  set randstatus [getRandomStatus]
+  append out "  \"random\" : \{\n"
+  if {$randstatus != "off"} {
+    append out "    \"status\" : \"$randstatus\",\n"
+    append out "    \"start\" : \"[hexToTime $bulb(randommode_start)]\",\n"
+    append out "    \"stop\" : \"[hexToTime $bulb(randommode_stop)]\",\n"
+    append out "    \"min\" : \"[hexToDecimal $bulb(randommode_min)]\",\n"
+    append out "    \"max\" : \"[hexToDecimal $bulb(randommode_max)]\",\n"
+    append out "    \"color\" : \"[colorToString $bulb(randommode_color)]\"\n"
+    append out "  \}\n"
+  } else {
+    append out "    \"status\" : \"$randstatus\""
+  }
+  append out "\}\n"
+  puts $out
+}
+
 proc printStatus {} {
   global HANDLES
   global EFFECTS
@@ -1240,6 +1307,10 @@ proc doCommand {} {
     ^dump$ {
       init [expr $INIT(device) + $INIT(color) + $INIT(effect) + $INIT(timers)]
       dumpBulb
+    }
+    ^json$ {
+      init [expr $INIT(device) + $INIT(color) + $INIT(effect) + $INIT(timers)]
+      dumpBulbToJson
     }
     ^debug* {
       checkArgs $c 3 "debug" {^debug [0-9]+ [0-9a-fA-F]+ [0-9a-fA-F]+$}
