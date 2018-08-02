@@ -141,6 +141,7 @@ Other commands:
 
  help <command>                  - get help for specific command
  dump                            - dump full state of bulb
+ json                            - dump full state of bulb in json format
  setup                           - setup bulb for this program
  name <name>                     - give bulb a new displayname / alias
  password <abcd>                 - set password

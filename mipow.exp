@@ -945,7 +945,7 @@ proc dumpBulbToJson {} {
   append out "  \"state\" : \{\n"
   append out "    \"color\" : \"[colorToString $bulb(color)]\",\n"
   append out "    \"effect\" : \{\n"
-  append out "      \"effect\" : \"[getEffectName $bulb(effect_effect) 1]\",\n"
+  append out "      \"effect\" : \"[getEffectName $bulb(effect_effect) 0]\",\n"
   append out "      \"color\" : \"[colorToString $bulb(effect_color)]\",\n"
   append out "      \"time\" : \{\n"
   append out "        \"raw\" : \"$bulb(effect_hold)\",\n"
