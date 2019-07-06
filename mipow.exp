@@ -824,7 +824,7 @@ proc getTimerType {type} {
   global TIMER_EFFECTS
   foreach key [lsort [array names TIMER_EFFECTS]] {
     if {$type == $TIMER_EFFECTS($key)} {
-      return "$key ($type)"
+      return "$key"
     }
   }
   return "unknown ($type)"
@@ -1667,16 +1667,13 @@ proc bgr {period start brightness} {
 
 proc ambient {period start} {
   set start1 $start
-  set period1 [expr round($period * 56 / 60)]
-
   set start2 [offsetTime $start [expr $period - 1]]
-  set period2 [expr round($period * 4 / 60)]
 
   # Step 2
-  setTimer 4 $start2 $period2 0 0 0 0
+  setTimer 4 $start2 1 0 0 0 0
 
   # Step 1
-  setTimer 3 $start1 $period1 0 255 47 0
+  setTimer 3 $start1 1 0 255 47 0
 
   stopTimer 1
   stopTimer 2
