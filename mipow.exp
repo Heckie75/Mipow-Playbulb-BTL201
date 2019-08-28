@@ -174,6 +174,7 @@ set INIT(effect)             2
 set INIT(timers)             4
 set INIT(device)             8
 
+set CHARACTERISTIC(2a19)     "battery"
 set CHARACTERISTIC(2a25)     "devid"
 set CHARACTERISTIC(2a26)     "devversion"
 set CHARACTERISTIC(2a29)     "devvendor"
@@ -224,6 +225,7 @@ set bulb(devsoftware)        ""
 set bulb(devcpu)             ""
 set bulb(devname)            ""
 set bulb(devpassword)        "0000"
+set bulb(battery)            "0"
 set bulb(color)              "00000000"
 set bulb(color_white)        "00"
 set bulb(color_red)          "00"
@@ -596,7 +598,16 @@ proc readDeviceInfo {} {
   
   if { [info exists HANDLES(devpassword)] } {
     set bulb(devpassword) [hexToASCII [readBulb $HANDLES(devpassword)]]
-  } 
+  }
+
+  if { [info exists HANDLES(battery)] } {
+    set battery [readBulb $HANDLES(battery)]
+    if { $battery != "" } {
+      set bulb(battery) "[hexToDecimal $battery]%"
+    } else {
+      set bulb(battery) "(not supported)"
+    }
+  }
 
   set bulb(devvendor) [hexToASCII [readBulb $HANDLES(devvendor)]]
   set bulb(devid) [hexToASCII [readBulb $HANDLES(devid)]]
@@ -875,8 +886,12 @@ proc dumpBulb {} {
   if { [info exists HANDLES(devpassword)] } {
     append out "Device password ($HANDLES(devpassword)):     $bulb(devpassword)\n"
   } else {
-    append out "Device password             (not supported)\n"
+    append out "Device password:            (not supported)\n"
   }
+
+  if { [info exists HANDLES(battery)] } {
+    append out "Battery level ($HANDLES(battery)):       $bulb(battery)\n"
+  } 
   
   append out "Device vendor ($HANDLES(devvendor)):       $bulb(devvendor)\n"
   append out "Device id ($HANDLES(devid)):           $bulb(devid)\n"
@@ -934,6 +949,10 @@ proc dumpBulbToJson {} {
 
   if { [info exists HANDLES(devpassword)] } {
     append out "    \"password\" : \"$bulb(devpassword)\",\n"
+  }
+
+  if { [info exists HANDLES(battery)] } {
+    append out "    \"battery\" : \"$bulb(battery)\",\n"
   }
 
   append out "    \"vendor\" : \"$bulb(devvendor)\",\n"
