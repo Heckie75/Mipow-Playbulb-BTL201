@@ -464,7 +464,7 @@ proc prepareBulb {id} {
   } else {
     readKnownBulbs
     lookupKnownBulbByName $id
-  } 
+  }
 
   if { $mac == "" } {
     puts "Bulb \"$id\" currently not known. Run setup before using alias."
@@ -595,7 +595,7 @@ proc readDeviceInfo {} {
   global HANDLES
   global bulb
   set bulb(devname) [hexToASCII [readBulb $HANDLES(devname)]]
-  
+
   if { [info exists HANDLES(devpassword)] } {
     set bulb(devpassword) [hexToASCII [readBulb $HANDLES(devpassword)]]
   }
@@ -655,9 +655,15 @@ proc readTimers {} {
 }
 
 proc readRandomMode {} {
+
   global HANDLES
 
-  parseRandomMode [readBulb $HANDLES(randommode)]
+  if { [info exists HANDLES(randommode)] } {
+
+    parseRandomMode [readBulb $HANDLES(randommode)]
+
+  }
+
 }
 
 proc hexToDecimal {s} {
@@ -882,7 +888,7 @@ proc dumpBulb {} {
   set out "\n"
   append out "Device mac:                 $bulb(mac)\n"
   append out "Device name ($HANDLES(devname)):         $bulb(devname)\n"
-  
+
   if { [info exists HANDLES(devpassword)] } {
     append out "Device password ($HANDLES(devpassword)):     $bulb(devpassword)\n"
   } else {
@@ -891,8 +897,8 @@ proc dumpBulb {} {
 
   if { [info exists HANDLES(battery)] } {
     append out "Battery level ($HANDLES(battery)):       $bulb(battery)\n"
-  } 
-  
+  }
+
   append out "Device vendor ($HANDLES(devvendor)):       $bulb(devvendor)\n"
   append out "Device id ($HANDLES(devid)):           $bulb(devid)\n"
   append out "Device version ($HANDLES(devversion)):      $bulb(devversion)\n"
@@ -922,17 +928,26 @@ proc dumpBulb {} {
     append out "Timer [expr $i + 1] time (minutes):     [hexToDecimal $bulb("timer_effect_hold_$i")]\n"
     append out "\n"
   }
-  append out "Randommode ($HANDLES(randommode)):          $bulb(randommode)\n"
 
-  set randstatus [getRandomStatus]
+  if { [info exists HANDLES(randommode)] } {
 
-  append out "Randommode status:          $randstatus\n"
-  if {$randstatus != "off"} {
-    append out "Randommode start at:        [hexToTime $bulb(randommode_start)]\n"
-    append out "Randommode stop at:         [hexToTime $bulb(randommode_stop)]\n"
-    append out "Randommode min.:            [hexToDecimal $bulb(randommode_min)] minutes\n"
-    append out "Randommode max.:            [hexToDecimal $bulb(randommode_max)] minutes\n"
-    append out "Randommode color:           [colorToString $bulb(randommode_color)]\n"
+    append out "Randommode ($HANDLES(randommode)):          $bulb(randommode)\n"
+
+    set randstatus [getRandomStatus]
+
+    append out "Randommode status:          $randstatus\n"
+    if {$randstatus != "off"} {
+      append out "Randommode start at:        [hexToTime $bulb(randommode_start)]\n"
+      append out "Randommode stop at:         [hexToTime $bulb(randommode_stop)]\n"
+      append out "Randommode min.:            [hexToDecimal $bulb(randommode_min)] minutes\n"
+      append out "Randommode max.:            [hexToDecimal $bulb(randommode_max)] minutes\n"
+      append out "Randommode color:           [colorToString $bulb(randommode_color)]\n"
+    }
+
+  } else {
+
+    append out "Randommode:                 (not supported)\n"
+
   }
 
   puts $out
@@ -987,21 +1002,30 @@ proc dumpBulbToJson {} {
       append out "    \}\n"
     }
   }
-  append out "  \],\n"
 
-  set randstatus [getRandomStatus]
-  append out "  \"random\" : \{\n"
-  if {$randstatus != "off"} {
-    append out "    \"status\" : \"$randstatus\",\n"
-    append out "    \"start\" : \"[hexToTime $bulb(randommode_start)]\",\n"
-    append out "    \"stop\" : \"[hexToTime $bulb(randommode_stop)]\",\n"
-    append out "    \"min\" : \"[hexToDecimal $bulb(randommode_min)]\",\n"
-    append out "    \"max\" : \"[hexToDecimal $bulb(randommode_max)]\",\n"
-    append out "    \"color\" : \"[colorToString $bulb(randommode_color)]\"\n"
+  if { [info exists HANDLES(randommode)] } {
+
+    append out "  \],\n"
+    set randstatus [getRandomStatus]
+    append out "  \"random\" : \{\n"
+    if {$randstatus != "off"} {
+      append out "    \"status\" : \"$randstatus\",\n"
+      append out "    \"start\" : \"[hexToTime $bulb(randommode_start)]\",\n"
+      append out "    \"stop\" : \"[hexToTime $bulb(randommode_stop)]\",\n"
+      append out "    \"min\" : \"[hexToDecimal $bulb(randommode_min)]\",\n"
+      append out "    \"max\" : \"[hexToDecimal $bulb(randommode_max)]\",\n"
+      append out "    \"color\" : \"[colorToString $bulb(randommode_color)]\"\n"
+    } else {
+      append out "    \"status\" : \"$randstatus\"\n"
+    }
+    append out "  \}\n"
+
   } else {
-    append out "    \"status\" : \"$randstatus\"\n"
+
+    append out "  \]\n"
+
   }
-  append out "  \}\n"
+
   append out "\}\n"
   puts $out
 }
@@ -1121,27 +1145,56 @@ proc playTimer {new_timer} {
 }
 
 proc setRandomMode {start stop min max w r g b} {
-  set random [decimalToHex [currentSeconds]]
-  set currentTime [timeToHex [currentTime 0] -1]
-  set starthex [timeToHex $start 1]
-  set stophex [timeToHex $stop 1]
-  set min [decimalToHex $min]
-  set max [decimalToHex $max]
-  set color [buildHexColor $w $r $g $b]
 
-  playRandomMode "$random$currentTime$starthex$stophex$min$max$color"
+  global HANDLES
+
+  if { [info exists HANDLES(randommode)] } {
+
+    set random [decimalToHex [currentSeconds]]
+    set currentTime [timeToHex [currentTime 0] -1]
+    set starthex [timeToHex $start 1]
+    set stophex [timeToHex $stop 1]
+    set min [decimalToHex $min]
+    set max [decimalToHex $max]
+    set color [buildHexColor $w $r $g $b]
+
+    playRandomMode "$random$currentTime$starthex$stophex$min$max$color"
+
+  } else {
+
+    puts "\nDevice does not support randommode.\n"
+    cleanup
+    exit 1
+
+  }
+
 }
 
 proc stopRandomMode {} {
-  set random [decimalToHex [currentSeconds]]
-  set currentTime [timeToHex [currentTime 0] -1]
-  set starthex "ffff"
-  set stophex "ffff"
-  set min "ff"
-  set max "ff"
-  set color "00000000"
 
-  playRandomMode "$random$currentTime$starthex$stophex$min$max$color"
+  global HANDLES
+
+  if { [info exists HANDLES(randommode)] } {
+
+    set random [decimalToHex [currentSeconds]]
+    set currentTime [timeToHex [currentTime 0] -1]
+    set starthex "ffff"
+    set stophex "ffff"
+    set min "ff"
+    set max "ff"
+    set color "00000000"
+
+    playRandomMode "$random$currentTime$starthex$stophex$min$max$color"
+
+  } else {
+
+    puts "\nDevice does not support randommode.\n"
+    cleanup
+    exit 1
+
+  }
+
+
 }
 
 proc setTimer {timer start minutes w r g b} {
@@ -1468,6 +1521,7 @@ proc doCommand {} {
       }
     }
     ^random* {
+
       if {[lindex $c 1] == "off"} {
         init 0
         stopRandomMode
@@ -1476,6 +1530,7 @@ proc doCommand {} {
         init $INIT(timers)
         setRandomMode [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5] [lindex $c 6] [lindex $c 7] [lindex $c 8]
       }
+
     }
     ^name* {
       checkArgs $c 1 "name" {^name .+$}
@@ -1483,9 +1538,11 @@ proc doCommand {} {
       setBulbName [lrange [concat $c] 1 end]
     }
     ^password* {
+
       checkArgs $c 1 "password" {^password .{4}$}
       init 0
       setBulbPassword [lrange [concat $c] 1 end]
+
     }
     ^reset$ {
       init 0
