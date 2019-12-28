@@ -205,9 +205,9 @@ Note: Although according the app there is an additional effect called „candle�
 
 - Byte: 1 to 4: Color of effect, current color, values are persisted even if effect stops (can be written in order to remember previous color after bulb has been soft-turned off in order to be able to toggle to colors before – must be programmed by yourself of course)
 - Byte 5: Effect (blink=00, pulse=01, hard rainbow=02, smooth rainbow=03, candle=04, halt=ff)
-- Byte 6: no special meaning, always „ff“, use „00“ if you set handle
+- Byte 6: For blink effect it is the amount of blinks (repetition) before pause starts (see byte 8). For all other effects always „ff“, use „00“ if you set handle
 - Byte 7: Delay of the effect in hex
-- Byte 8: no special meaning, always „ff“, use „00“ if you set handle
+- Byte 8: For blink effect it is the pause. for other effects always „ff“, use „00“ if you set handle
 
 ### More about delay of effects
 **1. Delay for smooth rainbow effect**
@@ -235,12 +235,16 @@ Example: Pulse with hold 255 (ff)
 - It takes 0,255 secs for one step with hold of 255
 
 **4. Delay for blink effect**
-The value is the period in 1/100-seconds for each state (on, off).
+**byte 7**: The value is the period in 1/100-seconds for each state (on, off).
+**byte 8** The value is the pause in 1/10-seconds between two chunks of blinks.
 
-Example: Blink with hold 255
+**Example 1**: Blink with hold 255 in byte 7
 - 10 on/off-turns take 51 seconds
 - 1 turn takes 5,1 seconds
 - Hold of 255 means 2,55 seconds on and another 2,55 seconds off
+
+**Example 2**: Blink with hold 100 (0x64) in byte 7, that is 1 second, and pause 10 (0x0a) in byte 8, that is also 1 second, and repetition 1 blinks constantly
+* char-write-cmd 19 000a00000001640a
 
 ## Timers
 ### Read current timers
