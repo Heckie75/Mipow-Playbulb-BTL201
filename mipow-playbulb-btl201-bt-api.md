@@ -1,23 +1,21 @@
 # Mipow Playbulb  Bluetooth API
 
 This API is at least compatible to the following models:
-* Mipow Playbulb Rainbow (BTL200), tested rev. BTL200_v7 / Application version 2.4.3.26 (no candle effect, no password)
-* Mipow Playbulb Smart (BTL201), tested rev. BTL201_v2 / Application version 2.4.3.26 (no candle effect, no password)
-
-* Mipow Playbulb Spot Mesh (BTL203), tested rev. BTL203M_V1.6 / Application version 2.4.5.13 (remembers whole state, light, effect etc. after power off!)
+* Mipow Playbulb Rainbow (BTL200), tested rev. BTL200_v7 / Application version 2.4.3.26 (no candle effect)
+* Mipow Playbulb Smart (BTL201), tested rev. BTL201_v2 / Application version 2.4.3.26 (no candle effect)
+* Mipow Playbulb Spot Mesh (BTL203), tested rev. BTL203M_V1.6 / Application version 2.4.5.13 (no candle effect, remembers whole state, light, effect etc. after power off!)
+* Mipow Playbulb Candle (BTL300, BTL305), confirmed by other users
+* MiPow Playbulb String (BTL505-GN), confirmed by other users (device does not have random- / security mode)
 
 Not tested yet:
-* Mipow Playbulb Candle (BTL300), untested, confirmed by other users
 * MiPow Playbulb Sphere (BTL301W), untested, unconfirmed, feedback is welcome!
 * MiPow Playbulb Garden (BTL400), untested, unconfirmed, feedback is welcome!
 * MiPow Playbulb Comet (BTL501A), untested, unconfirmed, feedback is welcome!
-* MiPow Playbulb String (BTL505-GN), untested, unconfirmed, feedback is welcome!
 * MiPow Playbulb Solar (BTL601), untested, unconfirmed, feedback is welcome!
 
 This API is very likely NOT compatible with bulbs of series BTL1xx:
 * MiPow Playbulb Lite (BTL100S)
 * MiPow Playbulb Color (BTL100C)
-
 
 ## Characteristics
 

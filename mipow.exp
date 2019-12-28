@@ -64,28 +64,35 @@ set HELP(triangle) "\
 set HELP(stop) "\
   stop                            - stop soft-effect"
 set HELP(pulse) "\
-  pulse <hold> <white> <red> <green> <blue> \n\
+  pulse <white> <red> <green> <blue> <hold>\n\
  \                                - run build-in pulse effect \n\
- \                                  <hold>: 0 - 255ms per step \n\
- \                                  color values: 0=off, 1=on"
+ \                                  color values: 0=off, 1=on \n\
+ \                                  <hold> per step in ms: 0 - 255"
 set HELP(blink) "\
-  blink <hold> <white> <red> <green> <blue> \n\
+  blink <white> <red> <green> <blue> <time> \[<repetitions> <pause>\] \n\
  \                                - run build-in blink effect \n\
- \                                  <hold>: 0 - 255ms per step \n\
- \                                  color values: 0 - 255"
+ \                                  color values: 0 - 255 \n\
+ \                                  <time> in 1/100s: 0 - 255 \n\
+ \                                  <repetitions> (optional) before pause: 0 - 255 \n\
+ \                                  <pause> (optional) in 1/10s: 0 - 255"
+
 set HELP(rainbow) "\
   rainbow <hold>                  - run build-in rainbow effect \n\
- \                                  <hold>: 0 - 255ms per step"
+ \                                  <hold> per step in ms: 0 - 255"
 set HELP(candle) "\
-  candle <hold> <white> <red> <green> <blue> \n\
+  candle <white> <red> <green> <blue> <hold> \n\
  \                                - run build-in candle effect \n\
- \                                  <hold>: 0 - 255ms per step \n\
- \                                  color values: 0 - 255"
+ \                                  color values: 0 - 255 \n\
+ \                                  <hold>"
 set HELP(disco) "\
   disco <hold>                    - run build-in disco effect \n\
- \                                  <hold>: 0 - 255 in 1/100s"
+ \                                  <hold> in 1/100s: 0 - 255"
 set HELP(hold) "\
-  hold <hold>                     - change hold value of current effect"
+  hold <hold>  \[<repetitions> <pause>\] \n\
+ \                                - change hold value of current effect \n\
+ \                                  <repetitions> (optional) before pause: 0 - 255 \n\
+ \                                  <pause> (optional) in 1/10s: 0 - 255"
+
 set HELP(halt) "\
   halt                            - halt build-in effect, keeps color"
 set HELP(timer) "\
@@ -210,6 +217,7 @@ set EFFECTS(pulse)           "01"
 set EFFECTS(disco)           "02"
 set EFFECTS(rainbow)         "03"
 set EFFECTS(candle)          "04"
+set EFFECTS(pause)           "pause"
 set EFFECTS(halt)            "ff"
 
 set TIMER_EFFECTS(off)       "04"
@@ -235,6 +243,8 @@ set bulb(effect)             "00000000ff00ff00"
 set bulb(effect_color)       "00000000"
 set bulb(effect_effect)      "ff"
 set bulb(effect_hold)        "ff"
+set bulb(effect_pause)       "ff"
+set bulb(effect_repititions) "ff"
 set bulb(randommode)         "000000ffffffffffff00000000"
 set bulb(randommode_status)  "00"
 set bulb(randommode_start)   "ffff"
@@ -782,7 +792,9 @@ proc parseEffect {effect} {
   set bulb(effect_color)  [string range $effect 0 7]
   set bulb(prev_color)    [string range $effect 0 7]
   set bulb(effect_effect) [string range $effect 8 9]
+  set bulb(effect_repititions) [hexToDecimal [string range $effect 9 11]]
   set bulb(effect_hold)   [hexToDecimal [string range $effect 12 13]]
+  set bulb(effect_pause)   [hexToDecimal [string range $effect 14 15]]
 }
 
 proc parseRandomMode {randommode} {
@@ -868,6 +880,9 @@ proc holdToHumanReadable {effect hold} {
   } elseif {$effect == $EFFECTS(rainbow)} {
     set cycle [expr round($hold * 1.536)]
     return "$cycle sec"
+  } elseif {$effect == $EFFECTS(pause)} {
+    set cycle [expr $hold  / 10.0]
+    return "$cycle sec"
   } elseif {$effect == $EFFECTS(halt)} {
     return "n/a"
   }
@@ -883,6 +898,7 @@ proc colorToString {color} {
 
 proc dumpBulb {} {
   global HANDLES
+  global EFFECTS
   global bulb
 
   set out "\n"
@@ -913,6 +929,11 @@ proc dumpBulb {} {
   append out "Effect color:               [colorToString $bulb(effect_color)]\n"
   append out "Effect time (raw):          $bulb(effect_hold)\n"
   append out "Effect time (approx.):      [holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\n"
+  if { $bulb(effect_effect) == 0 } {
+    append out "Effect pause (raw):         $bulb(effect_pause)\n"
+    append out "Effect pause (approx.):     [holdToHumanReadable $EFFECTS(pause) $bulb(effect_pause)]\n"
+    append out "Effect repititions:         $bulb(effect_repititions)\n"
+  }
   append out "\n"
   append out "Timer Settings ($HANDLES(timersettings)):      $bulb(timer)\n"
   append out "Timer Effect ($HANDLES(timereffects)):        $bulb(timer_effect)\n"
@@ -955,6 +976,7 @@ proc dumpBulb {} {
 
 proc dumpBulbToJson {} {
   global HANDLES
+  global EFFECTS
   global bulb
 
   set out "\{\n"
@@ -981,9 +1003,12 @@ proc dumpBulbToJson {} {
   append out "    \"effect\" : \{\n"
   append out "      \"effect\" : \"[getEffectName $bulb(effect_effect) 0]\",\n"
   append out "      \"color\" : \"[colorToString $bulb(effect_color)]\",\n"
+  append out "      \"repititions\" : $bulb(effect_repititions),\n"
   append out "      \"time\" : \{\n"
-  append out "        \"raw\" : \"$bulb(effect_hold)\",\n"
-  append out "        \"human\" : \"[holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\"\n"
+  append out "        \"speed_raw\" : $bulb(effect_hold),\n"
+  append out "        \"speed_human\" : \"[holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\",\n"
+  append out "        \"pause_raw\" : $bulb(effect_pause),\n"
+  append out "        \"pause_human\" : \"[holdToHumanReadable $EFFECTS(pause) $bulb(effect_pause)]\"\n"
   append out "      \}\n"
   append out "    \},\n"
   append out "    \"time\" : \"[hexToTime $bulb(time)]\"\n"
@@ -1365,6 +1390,7 @@ proc lookupKnownBulbByName {pattern} {
 proc doCommand {} {
   global INIT
   global cmd
+  global bulb
 
   log "doCommand: received command <$cmd>"
 
@@ -1425,38 +1451,49 @@ proc doCommand {} {
       triangle [lindex $c 1] [lindex $c 2] [lindex $c 3]
     }
     ^pulse* {
-      checkArgs $c 5 "pulse" {^pulse [0-9]+ [0-1]+ [0-1]+ [0-1]+ [0-1]+$}
+      checkArgs $c 5 "pulse" {^pulse [0-1]+ [0-1]+ [0-1]+ [0-1]+ [0-9]+$}
       init 0
-      setEffect "pulse" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
+      setEffect "pulse" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] 0 [lindex $c 5] 0
     }
     ^blink* {
-      checkArgs $c 5 "blink" {^blink [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
-      setEffect "blink" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
+      if {[llength $c] == 8} {
+        checkArgs $c 7 "blink" {^blink [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
+        setEffect "blink" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 6] [lindex $c 5] [lindex $c 7]
+      } else {
+        checkArgs $c 5 "blink" {^blink [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
+        setEffect "blink" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] 0 [lindex $c 5] 0
+      }
     }
     ^rainbow* {
       checkArgs $c 1 "rainbow" {^rainbow [0-9]+$}
       init 0
-      setEffect "rainbow" [lindex $c 1] 0 0 0 0
+      setEffect "rainbow" 0 0 0 0 0 [lindex $c 1] 0
     }
     ^candle* {
       checkArgs $c 5 "candle" {^candle [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
-      setEffect "candle" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
+      setEffect "candle" [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5] 0 0
     }
     ^disco* {
       checkArgs $c 1 "disco" {^disco [0-9]+$}
       init 0
-      setEffect "disco" [lindex $c 1] 0 0 0 0
+      setEffect "disco" 0 0 0 0 0 [lindex $c 1] 0
     }
     ^hold* {
-      checkArgs $c 1 "hold" {^hold [0-9]+$}
-      init [expr $INIT(color) + $INIT(effect)]
-      setEffectHold [lindex $c 1]
+      if { [llength $c] == 4 } {
+        checkArgs $c 1 "hold" {^hold [0-9]+ [0-9]+ [0-9]+$}
+        init [expr $INIT(color) + $INIT(effect)]
+        setEffectHold [lindex $c 2] [lindex $c 1] [lindex $c 3]
+      } else {
+        checkArgs $c 1 "hold" {^hold [0-9]+$}
+        init [expr $INIT(color) + $INIT(effect)]
+        setEffectHold $bulb(effect_repititions) [lindex $c 1] $bulb(effect_pause)
+      }
     }
     ^halt {
       init [expr $INIT(color) + $INIT(effect)]
-      setEffectHold -1
+      setEffectHold 0 -1 0
     }
     ^wakeup* {
       checkArgs $c 1 "wakeup" {^wakeup [0-9]+ ?[0-9]*[:0-9]*$}
@@ -1590,20 +1627,20 @@ proc setColor {w r g b} {
   playColor $new_color
 }
 
-proc setEffect {effect hold w r g b} {
+proc setEffect {effect w r g b repetitions hold pause} {
   global EFFECTS
-  set new_effect "[buildHexColor $w $r $g $b]$EFFECTS($effect)00[decimalToHex $hold]00"
+  set new_effect "[buildHexColor $w $r $g $b]$EFFECTS($effect)[decimalToHex $repetitions][decimalToHex $hold][decimalToHex $pause]"
   playEffect $new_effect
 }
 
-proc setEffectHold {hold} {
+proc setEffectHold {repititions hold pause} {
   global bulb
 
   if {$hold == -1} {
     playEffect "00000000ff00[decimalToHex $hold]00"
     playColor $bulb(color)
   } else {
-    playEffect "$bulb(color)$bulb(effect_effect)00[decimalToHex $hold]00"
+    playEffect "$bulb(color)$bulb(effect_effect)[decimalToHex $repititions][decimalToHex $hold][decimalToHex $pause]"
   }
 }
 

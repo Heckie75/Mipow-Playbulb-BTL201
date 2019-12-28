@@ -22,9 +22,10 @@ This script allows to control Mipow PLaybulbs via bluetooth BLE (low energy, ver
 $ ./mipow.exp AF:66:4B:0D:AC:E6 
 Usage: <mac/alias> <command> <parameters...>
                                    <mac>: bluetooth mac address of bulb
-                                   <alias>: you can use alias instead of mac address 
-                                            after you have run setup (see setup) 
+                                   <alias>: you can use alias instead of mac address
+                                            after you have run setup (see setup)
                                    <command>: For command and parameters
+
 
 Basic commands:
 
@@ -32,119 +33,112 @@ Basic commands:
  on                              - turn on light (white)
  off                             - turn off light
  toggle                          - turn off / on (remembers color!)
- color <white> <red> <green> <blue> 
+ color <white> <red> <green> <blue>
                                  - set color, each value 0 - 255
  up                              - turn up light
  down                            - dim light
 
+
 Build-in effects:
 
- pulse <hold> <white> <red> <green> <blue> 
-                                 - run build-in pulse effect 
-                                   <hold>: 0 - 255ms per step 
+ pulse <white> <red> <green> <blue> <hold>
+                                 - run build-in pulse effect
                                    color values: 0=off, 1=on
-
- blink <hold> <white> <red> <green> <blue> 
-                                 - run build-in blink effect 
-                                   <hold>: 0 - 255ms per step 
+                                   <hold> per step in ms: 0 - 255
+ blink <white> <red> <green> <blue> <time> [<repetitions> <pause>]
+                                 - run build-in blink effect
                                    color values: 0 - 255
-
- rainbow <hold>                  - run build-in rainbow effect 
-                                   <hold>: 0 - 255ms per step
-
- disco <hold>                    - run build-in disco effect 
-                                   <hold>: 0 - 255 in 1/100s
-
- candle <hold> <white> <red> <green> <blue>
+                                   <time> in 1/100s: 0 - 255
+                                   <repetitions> (optional) before pause: 0 - 255
+                                   <pause> (optional) in 1/10s: 0 - 255
+ rainbow <hold>                  - run build-in rainbow effect
+                                   <hold> per step in ms: 0 - 255
+ candle <white> <red> <green> <blue> <hold>
                                  - run build-in candle effect
-                                   <hold>: 0 - 255ms per step
                                    color values: 0 - 255
+                                   <hold>
+ disco <hold>                    - run build-in disco effect
+                                   <hold> in 1/100s: 0 - 255
+ hold <hold>  [<repetitions> <pause>]
+                                 - change hold value of current effect
+                                   <repetitions> (optional) before pause: 0 - 255
+                                   <pause> (optional) in 1/10s: 0 - 255
+ halt                            - halt build-in effect, keeps color
 
- hold <hold>                     - change hold value of current effect
 
 Soft-effects which stay connected and run long:
 
- animate <hold> <white> <red> <green> <blue> 
-                                 - change color smoothly based 
-                                   <hold>: 0 - 255ms 
+ animate <hold> <white> <red> <green> <blue>
+                                 - change color smoothly based
+                                   <hold>: 0 - 255ms
                                    color-values: 0 - 255
-
- triangle <hold> <delay> <max>   - change colors 
-                                   <hold> in ms 
-                                   <delay> in ms 
-                                           0 means no animation 
+ triangle <hold> <delay> <max>   - change colors
+                                   <hold> in ms
+                                   <delay> in ms
+                                           0 means no animation
                                            < 0 means dark pause
-
  stop                            - stop soft-effect
+
 
 Timer commands:
 
  timer <timer> <start> <minutes> [<white> <red> <green> <blue>]
-                                 - schedules timer 
-                                   <timer>: No. of timer 1 - 4 
- 
-                                   <start>: starting time 
-                                            (hh:mm or in minutes) 
-                                   <minutes>: runtime in minutes 
-                                   color values: 0 - 255 
- 
- timer <timer> off               - deactivates single timer 
-                                   <timer>: No. of timer 1 - 4 
-  
- timer off                       - deactivates all timers
-
- fade <minutes> <white> <red> <green> <blue> 
-                                 - change color smoothly 
-                                   <minutes>: runtime in minutes 
+                                 - schedules timer
+                                   <timer>: No. of timer 1 - 4
+                                   <start>: starting time
+                                            (hh:mm or in minutes)
+                                   <minutes>: runtime in minutes
                                    color values: 0 - 255
-
- ambient <minutes> [<start>]     - schedules ambient program 
-                                   <minutes>: runtime in minutes 
-                                              best in steps of 15m 
+ timer <timer> off               - deactivates single timer
+                                   <timer>: No. of timer 1 - 4
+ timer off                       - deactivates all timers
+ fade <minutes> <white> <red> <green> <blue>
+                                 - change color smoothly
+                                   <minutes>: runtime in minutes
+                                   color values: 0 - 255
+ ambient <minutes> [<start>]     - schedules ambient program
+                                   <minutes>: runtime in minutes
+                                              best in steps of 15m
                                    <start>: starting time (optional)
                                             (hh:mm or in minutes)
-
- wakeup <minutes> [<start>]      - schedules wake-up program 
-                                   <minutes>: runtime in minutes 
-                                              best in steps of 15m 
+ wakeup <minutes> [<start>]      - schedules wake-up program
+                                   <minutes>: runtime in minutes
+                                              best in steps of 15m
                                    <start>: starting time (optional)
                                             (hh:mm or in minutes)
-
- doze <minutes> [<start>]        - schedules doze program 
-                                   <minutes>: runtime in minutes 
-                                              best in steps of 15m 
+ doze <minutes> [<start>]        - schedules doze program
+                                   <minutes>: runtime in minutes
+                                              best in steps of 15m
                                    <start>: starting time (optional)
                                             (hh:mm or in minutes)
-
- bgr <minutes> [<start>] [<brightness>] 
-                                 - schedules blue-green-red program 
-                                   <minutes>: runtime in minutes 
+ bgr <minutes> [<start>] [<brightness>]
+                                 - schedules blue-green-red program
+                                   <minutes>: runtime in minutes
                                               best in steps of 4m, up to 1020m
                                    <start>: starting time (optional)
                                             (hh:mm or in minutes)
                                    <brightness>: 0 - 255 (default: 255)
-
  random <start> <stop> <min> <max> [<white> <red> <green> <blue>]
                                  - schedules random mode
-                                   <start>: start time 
-                                            (hh:mm or in minutes) 
-                                   <stop>: stop time 
-                                           (hh:mm or in minutes) 
-                                   <min>: min runtime in minutes 
-                                   <max>: max runtime in minutes 
-                                   color values: 0 - 255 
+                                   <start>: start time
+                                            (hh:mm or in minutes)
+                                   <stop>: stop time
+                                           (hh:mm or in minutes)
+                                   <min>: min runtime in minutes
+                                   <max>: max runtime in minutes
+                                   color values: 0 - 255
 
  random off                      - stop random mode
+
 
 Other commands:
 
  help <command>                  - get help for specific command
- dump                            - dump full state of bulb
- json                            - dump full state of bulb in json format
  setup                           - setup bulb for this program
  name <name>                     - give bulb a new displayname / alias
  password <abcd>                 - set password
- status                          - print full state of bulb
+ dump                            - dump full state of bulb
+ json                            - dump full state of bulb in json format
  reset                           - perform factory reset
 ```
 
