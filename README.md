@@ -77,7 +77,6 @@ Soft-effects which stay connected and run long:
                                    <delay> in ms
                                            0 means no animation
                                            < 0 means dark pause
- stop                            - stop soft-effect
 
 
 Timer commands:

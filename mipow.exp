@@ -61,8 +61,6 @@ set HELP(triangle) "\
  \                                  <delay> in ms \n\
  \                                          0 means no animation \n\
  \                                          < 0 means dark pause"
-set HELP(stop) "\
-  stop                            - stop soft-effect"
 set HELP(pulse) "\
   pulse <white> <red> <green> <blue> <hold>\n\
  \                                - run build-in pulse effect \n\
@@ -165,9 +163,7 @@ set HELP(reset) "\
 set HELP(setup) "\
   setup                           - setup bulb for this program"
 
-set pidfile                  ""
 set hndfile                  ""
-set cmdfile                  ""
 
 set mac                      ""
 set cmd                      ""
@@ -283,21 +279,6 @@ set bulb(timer_effect_hold_4)     "00"
 set bulb(prev_color)         "ff000000"
 set bulb(prev_effect)        "ff000000ff00ff00"
 
-# reads process ID from file if other process is running
-proc readPid {} {
-  global pidfile
-
-  if {[file exists $pidfile] == 0} {
-    return ""
-  }
-
-  set fp [open $pidfile r]
-  fconfigure $fp -buffering line
-  gets $fp data
-  close $fp
-  return $data
-}
-
 # cuts first string element in s
 proc lshift {s} {
   set r ""
@@ -310,92 +291,10 @@ proc lshift {s} {
   return $r
 }
 
-# logs output to file with process ID
+# logs output to stdout
 proc log {l} {
-  global pidfile
-
   if {[log_user] != 0} {
     puts $l
-  }
-
-  set fp [open $pidfile a]
-  puts $fp $l
-  close $fp
-}
-
-# queues command in command file for interaction between processes
-proc sendCmd {cmd} {
-  global cmdfile
-
-  if {[file exists $cmdfile] != 0} {
-    file delete $cmdfile
-  }
-
-  set fp [open $cmdfile w]
-  puts $fp $cmd
-  puts $fp "\n"
-  close $fp
-}
-
-# reads command from command file for interaction between processes
-proc readCmd {} {
-  global cmdfile
-
-  if {[file exists $cmdfile] == 0} {
-    return ""
-  }
-
-  set fp [open $cmdfile r]
-  fconfigure $fp -buffering line
-  gets $fp cmd
-  close $fp
-
-  file delete $cmdfile
-
-  return $cmd
-}
-
-# initialises file with process id
-proc start {} {
-  global pidfile
-  global cmdfile
-  global mac
-
-  set fp [open $pidfile w]
-  puts $fp [pid]
-  close $fp
-}
-
-# deletes temp files, i.e. command and process file
-proc cleanup {} {
-  global pidfile
-  global cmdfile
-
-  file delete -force $cmdfile
-  file delete -force $pidfile
-}
-
-# stops other running bulb process
-proc stop {} {
-  global pidfile
-  global cmdfile
-  global mac
-
-  set runPid [readPid]
-  set i 0
-
-  while {$runPid != "" && $runPid != [pid] && $i < 5} {
-    incr i
-    puts "stop: Try to stop other bulb <$mac> with pid <$runPid> ... $i"
-
-    sendCmd "stop"
-
-    after 1000
-    set runPid [readPid]
-  }
-
-  if {$i == 5} {
-# TODO kill
   }
 }
 
@@ -413,7 +312,6 @@ proc help {argv} {
     } else {
       puts "\nUnknown command <$command>.\n"
     }
-    cleanup
     exit 1
   } elseif {[llength $argv] < 1 || [lindex $argv 0] == "help"} {
     puts "$HELP(usage)\n"
@@ -436,7 +334,6 @@ proc help {argv} {
     puts "\nSoft-effects which stay connected and run long:\n"
     puts "$HELP(animate)"
     puts "$HELP(triangle)"
-    puts "$HELP(stop)\n"
     puts "\nTimer commands:\n"
     puts "$HELP(timer)"
     puts "$HELP(fade)"
@@ -454,7 +351,6 @@ proc help {argv} {
     puts "$HELP(json)"
     puts "$HELP(reset)"
     puts ""
-    cleanup
     exit 1
   }
 }
@@ -463,8 +359,6 @@ proc help {argv} {
 proc prepareBulb {id} {
   global MAC_PATTERN
   global mac
-  global pidfile
-  global cmdfile
   global hndfile
 
   set is_mac [regexp "$MAC_PATTERN" $id]
@@ -482,8 +376,6 @@ proc prepareBulb {id} {
   }
 
   set _mac [regsub -all {[\:]+} $mac {-}]
-  append pidfile "/tmp/bulb-" $_mac ".pid"
-  append cmdfile "/tmp/bulb-" $_mac ".cmd"
   append hndfile "/tmp/bulb-" $_mac ".hnd"
 }
 
@@ -537,7 +429,6 @@ proc init {level} {
     }
   } else {
     puts "Connection failed."
-    cleanup
     exit -1
   }
   return $connected
@@ -1188,7 +1079,6 @@ proc setRandomMode {start stop min max w r g b} {
   } else {
 
     puts "\nDevice does not support randommode.\n"
-    cleanup
     exit 1
 
   }
@@ -1214,7 +1104,6 @@ proc stopRandomMode {} {
   } else {
 
     puts "\nDevice does not support randommode.\n"
-    cleanup
     exit 1
 
   }
@@ -1281,7 +1170,6 @@ proc setBulbPassword {password} {
     set bulb(devpassword) $password
   } else {
     puts "\nDevice does not support password feature.\n"
-    cleanup
     exit 1
   }
 }
@@ -1327,8 +1215,6 @@ proc setup {} {
   puts "Usage with alias:"
   puts "$ ./mipow.exp \"$bulb(devname)\" status\n"
   puts "Have fun with your bulb!\n"
-
-  cleanup
 
   exit 0
 }
@@ -1533,28 +1419,6 @@ proc doCommand {} {
         wheel [lindex $c 1] [lindex $c 2] 0 255
       }
     }
-    ^grb* {
-      checkArgs $c 1 "grb" {^grb [0-9]+ ?[0-9]*[:0-9]* ?[0-9]*$}
-      init 0
-      if {[llength $c] > 3} {
-        grb [lindex $c 1] [lindex $c 2] [lindex $c 3]
-      } elseif {[llength $c] > 2} {
-        grb [lindex $c 1] [lindex $c 2] 255
-      } else {
-        grb [lindex $c 1] 0 255
-      }
-    }
-    ^rbg* {
-      checkArgs $c 1 "rbg" {^rbg [0-9]+ ?[0-9]*[:0-9]* ?[0-9]*$}
-      init 0
-      if {[llength $c] > 3} {
-        rbg [lindex $c 1] [lindex $c 2] [lindex $c 3]
-      } elseif {[llength $c] > 2} {
-        rbg [lindex $c 1] [lindex $c 2] 255
-      } else {
-        rbg [lindex $c 1] 0 255
-      }
-    }
     ^fade* {
       checkArgs $c 1 "fade" {^fade [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
@@ -1606,9 +1470,6 @@ proc doCommand {} {
     ^reset$ {
       init 0
       reset
-    }
-    ^stop$ {
-      # do nothing
     }
     ^setup$ {
       setup
@@ -1872,10 +1733,6 @@ help $argv
 
 prepareBulb [lindex $argv 0]
 
-stop
-cleanup
-start
-
 spawn -noecho /usr/bin/gatttool -I
 
 set cmd [lshift $argv]
@@ -1890,5 +1747,3 @@ while {$cmd != ""} {
 disconnect
 
 close -i $spawn_id
-
-cleanup
