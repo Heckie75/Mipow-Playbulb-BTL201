@@ -29,116 +29,116 @@ Usage: <mac/alias> <command> <parameters...>
 
 Basic commands:
 
- status                          - print main information of bulb
- on                              - turn on light (white)
- off                             - turn off light
- toggle                          - turn off / on (remembers color!)
- color <white> <red> <green> <blue>
-                                 - set color, each value 0 - 255
- up                              - turn up light
- down                            - dim light
+ --status                          - print main information of bulb
+ --on                              - turn on light (white)
+ --off                             - turn off light
+ --toggle                          - turn off / on (remembers color!)
+ --color <white> <red> <green> <blue>
+                                   - set color, each value 0 - 255
+ --up                              - turn up light
+ --down                            - dim light
 
 
 Build-in effects:
 
- pulse <white> <red> <green> <blue> <hold>
-                                 - run build-in pulse effect
-                                   color values: 0=off, 1=on
-                                   <hold> per step in ms: 0 - 255
- blink <white> <red> <green> <blue> <time> [<repetitions> <pause>]
-                                 - run build-in blink effect
-                                   color values: 0 - 255
-                                   <time> in 1/100s: 0 - 255
-                                   <repetitions> (optional) before pause: 0 - 255
-                                   <pause> (optional) in 1/10s: 0 - 255
- rainbow <hold>                  - run build-in rainbow effect
-                                   <hold> per step in ms: 0 - 255
- candle <white> <red> <green> <blue> <hold>
-                                 - run build-in candle effect
-                                   color values: 0 - 255
-                                   <hold>
- disco <hold>                    - run build-in disco effect
-                                   <hold> in 1/100s: 0 - 255
- hold <hold>  [<repetitions> <pause>]
-                                 - change hold value of current effect
-                                   <repetitions> (optional) before pause: 0 - 255
-                                   <pause> (optional) in 1/10s: 0 - 255
- halt                            - halt build-in effect, keeps color
+ --pulse <white> <red> <green> <blue> <hold>
+                                   - run build-in pulse effect
+                                     color values: 0=off, 1=on
+                                     <hold> per step in ms: 0 - 255
+ --blink <white> <red> <green> <blue> <time> [<repetitions> <pause>]
+                                   - run build-in blink effect
+                                     color values: 0 - 255
+                                     <time> in 1/100s: 0 - 255
+                                     <repetitions> (optional) before pause: 0 - 255
+                                     <pause> (optional) in 1/10s: 0 - 255
+ --rainbow <hold>                  - run build-in rainbow effect
+                                     <hold> per step in ms: 0 - 255
+ --candle <white> <red> <green> <blue> <hold>
+                                   - run build-in candle effect
+                                     color values: 0 - 255
+                                     <hold>
+ --disco <hold>                    - run build-in disco effect
+                                     <hold> in 1/100s: 0 - 255
+ --hold <hold>  [<repetitions> <pause>]
+                                   - change hold value of current effect
+                                     <repetitions> (optional) before pause: 0 - 255
+                                     <pause> (optional) in 1/10s: 0 - 255
+ --halt                            - halt build-in effect, keeps color
 
 
 Soft-effects which stay connected and run long:
 
- animate <hold> <white> <red> <green> <blue>
-                                 - change color smoothly based
-                                   <hold>: 0 - 255ms
-                                   color-values: 0 - 255
- triangle <hold> <delay> <max>   - change colors
-                                   <hold> in ms
-                                   <delay> in ms
-                                           0 means no animation
-                                           < 0 means dark pause
-
+ --animate <hold> <white> <red> <green> <blue>
+                                   - change color smoothly based
+                                     <hold>: 0 - 255ms
+                                     color-values: 0 - 255
+ --triangle <hold> <delay> <max>   - change colors
+                                     <hold> in ms
+                                     <delay> in ms
+                                             0 means no animation
+                                             < 0 means dark pause
 
 Timer commands:
 
- timer <timer> <start> <minutes> [<white> <red> <green> <blue>]
-                                 - schedules timer
-                                   <timer>: No. of timer 1 - 4
-                                   <start>: starting time
-                                            (hh:mm or in minutes)
-                                   <minutes>: runtime in minutes
-                                   color values: 0 - 255
- timer <timer> off               - deactivates single timer
-                                   <timer>: No. of timer 1 - 4
- timer off                       - deactivates all timers
- fade <minutes> <white> <red> <green> <blue>
-                                 - change color smoothly
-                                   <minutes>: runtime in minutes
-                                   color values: 0 - 255
- ambient <minutes> [<start>]     - schedules ambient program
-                                   <minutes>: runtime in minutes
-                                              best in steps of 15m
-                                   <start>: starting time (optional)
-                                            (hh:mm or in minutes)
- wakeup <minutes> [<start>]      - schedules wake-up program
-                                   <minutes>: runtime in minutes
-                                              best in steps of 15m
-                                   <start>: starting time (optional)
-                                            (hh:mm or in minutes)
- doze <minutes> [<start>]        - schedules doze program
-                                   <minutes>: runtime in minutes
-                                              best in steps of 15m
-                                   <start>: starting time (optional)
-                                            (hh:mm or in minutes)
- bgr <minutes> [<start>] [<brightness>]
-                                 - schedules blue-green-red program
-                                   <minutes>: runtime in minutes
-                                              best in steps of 4m, up to 1020m
-                                   <start>: starting time (optional)
-                                            (hh:mm or in minutes)
-                                   <brightness>: 0 - 255 (default: 255)
- random <start> <stop> <min> <max> [<white> <red> <green> <blue>]
-                                 - schedules random mode
-                                   <start>: start time
-                                            (hh:mm or in minutes)
-                                   <stop>: stop time
-                                           (hh:mm or in minutes)
-                                   <min>: min runtime in minutes
-                                   <max>: max runtime in minutes
-                                   color values: 0 - 255
+ --timer <timer> <start> <minutes> [<white> <red> <green> <blue>]
+                                   - schedules timer
+                                     <timer>: No. of timer 1 - 4
+                                     <start>: starting time
+                                              (hh:mm or in minutes)
+                                     <minutes>: runtime in minutes
+                                     color values: 0 - 255
+ --timer <timer> off               - deactivates single timer
+                                     <timer>: No. of timer 1 - 4
+ --timer off                       - deactivates all timers
+ --fade <minutes> <white> <red> <green> <blue>
+                                   - change color smoothly
+                                     <minutes>: runtime in minutes
+                                     color values: 0 - 255
+ --ambient <minutes> [<start>]     - schedules ambient program
+                                     <minutes>: runtime in minutes
+                                                best in steps of 15m
+                                     <start>: starting time (optional)
+                                              (hh:mm or in minutes)
+ --wakeup <minutes> [<start>]      - schedules wake-up program
+                                     <minutes>: runtime in minutes
+                                                best in steps of 15m
+                                     <start>: starting time (optional)
+                                              (hh:mm or in minutes)
+ --doze <minutes> [<start>]        - schedules doze program
+                                     <minutes>: runtime in minutes
+                                                best in steps of 15m
+                                     <start>: starting time (optional)
+                                              (hh:mm or in minutes)
+ --wheel <bgr|grb|rbg> <minutes> [<start>] [<brightness>]
+                                   - schedules a program running through color wheel
+                                     <minutes>: runtime in minutes
+                                                best in steps of 4m, up to 1020m
+                                     <start>: starting time (optional)
+                                              (hh:mm or in minutes)
+                                     <brightness>: 0 - 255 (default: 255)
+ --random <start> <stop> <min> <max> [<white> <red> <green> <blue>]
+                                   - schedules random mode
+                                     <start>: start time
+                                              (hh:mm or in minutes)
+                                     <stop>: stop time
+                                             (hh:mm or in minutes)
+                                     <min>: min runtime in minutes
+                                     <max>: max runtime in minutes
+                                     color values: 0 - 255
 
- random off                      - stop random mode
+ --random off                      - stop random mode
 
 
 Other commands:
 
- help <command>                  - get help for specific command
- setup                           - setup bulb for this program
- name <name>                     - give bulb a new displayname / alias
- password <abcd>                 - set password
- dump                            - dump full state of bulb
- json                            - dump full state of bulb in json format
- reset                           - perform factory reset
+ --help <command>                  - get help for specific command
+ --setup                           - setup bulb for this program
+ --name <name>                     - give bulb a new displayname / alias
+ --password <abcd>                 - set password
+ --sleep <n>                       - pause processing for n milliseconds
+ --dump                            - dump full state of bulb
+ --json                            - dump full state of bulb in json format
+ --reset                           - perform factory reset
 ```
 
 ## Initial setup
@@ -178,7 +178,7 @@ a. There is a new file in your home folder called `~/.known_bulbs`. This file co
 b. There is a new file in your `/tmp` folder, e.g. `/tmp/bulb-AF-66-4B-0D-AC-E6.hnd`. It is a description of the _characteristics_ and _handles_ that your bulb provide. See API for more details. 
 
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 setup
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --setup
 
 Setup for bulb started ...
 
@@ -217,13 +217,13 @@ handle = 0x0002, char properties = 0x0a, char value handle = 0x0003, uuid = 0000
 In order to be able to distinguish multiple bulbs you should rename your bulb. 
 
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 name Livingroom
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --name Livingroom
 ```
 
 4. Dump full status of bulb
 
 ```
-$ ./mipow.exp Liv status
+$ ./mipow.exp Liv --status
 
 Device mac:                 AF:66:4B:0D:AC:E6
 Device name (0021):         Livingroom
@@ -313,12 +313,12 @@ $ sudo apt install zenity
 ## Examples
 ### Ask for help
 ``` 
-$ ./mipow.exp help
+$ ./mipow.exp --help
 
 ...
 
 
-$ ./mipow.exp help color
+$ ./mipow.exp --help color
 
 Usage: <mac/alias> <command> <parameters...>
                                    <mac>: bluetooth mac address of bulb
@@ -326,24 +326,24 @@ Usage: <mac/alias> <command> <parameters...>
                                             after you have run setup (see setup) 
                                    <command>: For command and parameters
 
- color <white> <red> <green> <blue> 
+ --color <white> <red> <green> <blue> 
                                  - set color, each value 0 - 255
 
 
-$ ./mipow.exp Liv color
+$ ./mipow.exp Liv --color
 Usage: <mac/alias> <command> <parameters...>
                                    <mac>: bluetooth mac address of bulb
                                    <alias>: you can use alias instead of mac address 
                                             after you have run setup (see setup) 
                                    <command>: For command and parameters
- color <white> <red> <green> <blue> 
+ --color <white> <red> <green> <blue> 
                                  - set color, each value 0 - 255
 ```
 
 
 ### Print status of bulb
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 status
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --status
 
 
 Effect:     blink, WRGB(0,255,0,0), 5.1 sec, 0.196 Hz, 11.76 bpm
@@ -364,67 +364,65 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6
 
 ### Set color
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 color 0 255 0 0
-$ ./mipow.exp AF:66:4B:0D:AC:E6 toggle
-$ ./mipow.exp AF:66:4B:0D:AC:E6 toggle
-$ ./mipow.exp AF:66:4B:0D:AC:E6 off
-$ ./mipow.exp AF:66:4B:0D:AC:E6 on
-$ ./mipow.exp AF:66:4B:0D:AC:E6 down
-$ ./mipow.exp AF:66:4B:0D:AC:E6 up
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --color 0 255 0 0
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --toggle
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --toggle
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --off
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --on
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --down
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --up
+```
+
+### Queueing commands / sleep command
+
+Since it takes some time to establish the bluetooth connection each time you start the script, I have introduced command queuing. Each command starts with a dash. The _sleep_ command pauses processing before the next command starts. 
+
+```
+$ ./mipow myroom --off --sleep 1000 --on --sleep 500 --off --sleep 250 --on --sleep 100 --off
 ```
 
 ### Build-in effects
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 pulse 10 0 0 0 0
-$ ./mipow.exp AF:66:4B:0D:AC:E6 blink 20 20 0 0 0
-$ ./mipow.exp AF:66:4B:0D:AC:E6 rainbow 20
-$ ./mipow.exp AF:66:4B:0D:AC:E6 disco 30
-$ ./mipow.exp AF:66:4B:0D:AC:E6 hold 100
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --pulse 10 0 0 0 0
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --blink 20 20 0 0 0
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --rainbow 20
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --disco 30
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --hold 100
 ```
 
 ### Software controlled animations (long running, stay connected)
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 animate  255 0 0 100
-$ ./mipow.exp AF:66:4B:0D:AC:E6 triangle -10 100 10
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --animate  255 0 0 100
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --triangle -10 100 10
 ```
-
-You can stop _software controlled animations_ by using a second terminal and enter the following:
-
-```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 stop
-```
-
-The script finds the other running process for this bulb by reading the _process id file_, e.g. `/tmp/bulb-AF-66-4B-0D-AC-E6.pid` and sends a _stop signal_ to the other process.
-
-**Note** If a previous process has not been terminated correctly, the script tries to stop the other process first before it continues. This takes 5 seconds. 
 
 ### Timers 
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 timer 1 22:40 10 0 0 255 255
-$ ./mipow.exp AF:66:4B:0D:AC:E6 timer 1 off
-$ ./mipow.exp AF:66:4B:0D:AC:E6 timer 2 22 1 0 0 255 255
-$ ./mipow.exp AF:66:4B:0D:AC:E6 timer off
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --timer 1 22:40 10 0 0 255 255
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --timer 1 off
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --timer 2 22 1 0 0 255 255
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --timer off
 ```
 
 ### Random turn-on and off
 ```
-$ ./mipow.exp AF:66:4B:0D:AC:E6 random 22:45 23:50 1 1 255 0 0 0
-$ ./mipow.exp AF:66:4B:0D:AC:E6 random off
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --random 22:45 23:50 1 1 255 0 0 0
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --random off
 ```
 
 ### Light programs (based on timers)
 ```
-$./mipow.exp AF:66:4B:0D:AC:E6 wakeup 8
-$ ./mipow.exp AF:66:4B:0D:AC:E6 doze 60
-$ ./mipow.exp AF:66:4B:0D:AC:E6 bgr 60 0 64
+$./mipow.exp AF:66:4B:0D:AC:E6 --wakeup 8
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --doze 60
+$ ./mipow.exp AF:66:4B:0D:AC:E6 --bgr 60 0 64
 ```
 
 ### Set name
 ```
-$./mipow.exp AF:66:4B:0D:AC:E6 name Timewaster
+$./mipow.exp AF:66:4B:0D:AC:E6 --name Timewaster
 ```
 
 ### Set password
 ```
-$./mipow.exp AF:66:4B:0D:AC:E6 password 1234
+$./mipow.exp AF:66:4B:0D:AC:E6 --password 1234
 ```
