@@ -22,8 +22,8 @@ This script allows to control Mipow PLaybulbs via bluetooth BLE (low energy, ver
 $ ./mipow.exp AF:66:4B:0D:AC:E6 
 Usage: <mac/alias> <command> <parameters...>
                                    <mac>: bluetooth mac address of bulb
-                                   <alias>: you can use alias instead of mac address
-                                            after you have run setup (see setup)
+                                   <alias>: you can use alias instead of mac address 
+                                            after you have run setup (see setup) 
                                    <command>: For command and parameters
 
 
@@ -33,100 +33,104 @@ Basic commands:
  --on                              - turn on light (white)
  --off                             - turn off light
  --toggle                          - turn off / on (remembers color!)
- --color <white> <red> <green> <blue>
+ --color <white> <red> <green> <blue> 
                                    - set color, each value 0 - 255
+ --color                           - request current color of bulb
  --up                              - turn up light
  --down                            - dim light
 
 
 Build-in effects:
 
+ --effect                          - request current effect of bulb
  --pulse <white> <red> <green> <blue> <hold>
-                                   - run build-in pulse effect
-                                     color values: 0=off, 1=on
+                                   - run build-in pulse effect 
+                                     color values: 0=off, 1=on 
                                      <hold> per step in ms: 0 - 255
- --blink <white> <red> <green> <blue> <time> [<repetitions> <pause>]
-                                   - run build-in blink effect
-                                     color values: 0 - 255
-                                     <time> in 1/100s: 0 - 255
-                                     <repetitions> (optional) before pause: 0 - 255
+ --blink <white> <red> <green> <blue> <time> [<repetitions> <pause>] 
+                                   - run build-in blink effect 
+                                     color values: 0 - 255 
+                                     <time> in 1/100s: 0 - 255 
+                                     <repetitions> (optional) before pause: 0 - 255 
                                      <pause> (optional) in 1/10s: 0 - 255
- --rainbow <hold>                  - run build-in rainbow effect
+ --rainbow <hold>                  - run build-in rainbow effect 
                                      <hold> per step in ms: 0 - 255
- --candle <white> <red> <green> <blue> <hold>
-                                   - run build-in candle effect
-                                     color values: 0 - 255
+ --candle <white> <red> <green> <blue> <hold> 
+                                   - run build-in candle effect 
+                                     color values: 0 - 255 
                                      <hold>
- --disco <hold>                    - run build-in disco effect
+ --disco <hold>                    - run build-in disco effect 
                                      <hold> in 1/100s: 0 - 255
- --hold <hold>  [<repetitions> <pause>]
-                                   - change hold value of current effect
-                                     <repetitions> (optional) before pause: 0 - 255
+ --hold <hold>  [<repetitions> <pause>] 
+                                   - change hold value of current effect 
+                                     <repetitions> (optional) before pause: 0 - 255 
                                      <pause> (optional) in 1/10s: 0 - 255
  --halt                            - halt build-in effect, keeps color
 
 
 Soft-effects which stay connected and run long:
 
- --animate <hold> <white> <red> <green> <blue>
-                                   - change color smoothly based
-                                     <hold>: 0 - 255ms
+ --animate <hold> <white> <red> <green> <blue> 
+                                   - change color smoothly based 
+                                     <hold>: 0 - 255ms 
                                      color-values: 0 - 255
- --triangle <hold> <delay> <max>   - change colors
-                                     <hold> in ms
-                                     <delay> in ms
-                                             0 means no animation
+ --triangle <hold> <delay> <max>   - change colors 
+                                     <hold> in ms 
+                                     <delay> in ms 
+                                             0 means no animation 
                                              < 0 means dark pause
 
 Timer commands:
 
  --timer <timer> <start> <minutes> [<white> <red> <green> <blue>]
-                                   - schedules timer
-                                     <timer>: No. of timer 1 - 4
-                                     <start>: starting time
-                                              (hh:mm or in minutes)
-                                     <minutes>: runtime in minutes
+                                   - schedules timer 
+                                     <timer>: No. of timer 1 - 4 
+                                     <start>: starting time 
+                                              (hh:mm or in minutes) 
+                                     <minutes>: runtime in minutes 
+                                     color values: 0 - 255 
+ --timer <timer> off               - deactivates single timer 
+                                     <timer>: No. of timer 1 - 4 
+ --timer off                       - deactivates all timers 
+ --timer                           - request current timer settings
+ --fade <minutes> <white> <red> <green> <blue> 
+                                   - change color smoothly 
+                                     <minutes>: runtime in minutes 
                                      color values: 0 - 255
- --timer <timer> off               - deactivates single timer
-                                     <timer>: No. of timer 1 - 4
- --timer off                       - deactivates all timers
- --fade <minutes> <white> <red> <green> <blue>
-                                   - change color smoothly
-                                     <minutes>: runtime in minutes
-                                     color values: 0 - 255
- --ambient <minutes> [<start>]     - schedules ambient program
-                                     <minutes>: runtime in minutes
-                                                best in steps of 15m
+ --ambient <minutes> [<start>]     - schedules ambient program 
+                                     <minutes>: runtime in minutes 
+                                                best in steps of 15m 
                                      <start>: starting time (optional)
                                               (hh:mm or in minutes)
- --wakeup <minutes> [<start>]      - schedules wake-up program
-                                     <minutes>: runtime in minutes
-                                                best in steps of 15m
+ --wakeup <minutes> [<start>]      - schedules wake-up program 
+                                     <minutes>: runtime in minutes 
+                                                best in steps of 15m 
                                      <start>: starting time (optional)
                                               (hh:mm or in minutes)
- --doze <minutes> [<start>]        - schedules doze program
-                                     <minutes>: runtime in minutes
-                                                best in steps of 15m
+ --doze <minutes> [<start>]        - schedules doze program 
+                                     <minutes>: runtime in minutes 
+                                                best in steps of 15m 
                                      <start>: starting time (optional)
                                               (hh:mm or in minutes)
- --wheel <bgr|grb|rbg> <minutes> [<start>] [<brightness>]
+ --wheel <bgr|grb|rbg> <minutes> [<start>] [<brightness>] 
                                    - schedules a program running through color wheel
-                                     <minutes>: runtime in minutes
-                                                best in steps of 4m, up to 1020m
+                                     <minutes>: runtime in minutes 
+                                                best in steps of 4m, up to 1020m 
                                      <start>: starting time (optional)
                                               (hh:mm or in minutes)
                                      <brightness>: 0 - 255 (default: 255)
  --random <start> <stop> <min> <max> [<white> <red> <green> <blue>]
                                    - schedules random mode
-                                     <start>: start time
-                                              (hh:mm or in minutes)
-                                     <stop>: stop time
-                                             (hh:mm or in minutes)
-                                     <min>: min runtime in minutes
-                                     <max>: max runtime in minutes
-                                     color values: 0 - 255
+                                     <start>: start time 
+                                              (hh:mm or in minutes) 
+                                     <stop>: stop time 
+                                             (hh:mm or in minutes) 
+                                     <min>: min runtime in minutes 
+                                     <max>: max runtime in minutes 
+                                     color values: 0 - 255 
 
- --random off                      - stop random mode
+ --random off                      - stop random mode 
+ --random                          - request current random mode state
 
 
 Other commands:
@@ -136,8 +140,12 @@ Other commands:
  --name <name>                     - give bulb a new displayname / alias
  --password <abcd>                 - set password
  --sleep <n>                       - pause processing for n milliseconds
- --dump                            - dump full state of bulb
+ --dump                            - request full state of bulb
+ --device                          - request device information of bulb
+ --print                           - prints collected data of bulb
  --json                            - dump full state of bulb in json format
+ --verbose                         - print information about processing
+ --debug                           - print actions in gatttool
  --reset                           - perform factory reset
 ```
 
@@ -223,60 +231,108 @@ $ ./mipow.exp AF:66:4B:0D:AC:E6 --name Livingroom
 4. Dump full status of bulb
 
 ```
-$ ./mipow.exp Liv --status
+$ ./mipow.exp Liv --dump --print
 
-Device mac:                 AF:66:4B:0D:AC:E6
-Device name (0021):         Livingroom
-Device vendor (0030):       Mipow Limited
-Device id (0028):           BTL201
-Device version (002c):      BTL201_v2
-Device software (002e):     Application version 2.4.3.26
-Device CPU (002a):          CSR101x A05
+Device mac:                   6A:9C:4B:0F:AC:E6
+Device name:                  Wohnzimmer
+Device password:              (not supported)
+Battery level:                (not supported)
+Device vendor:                Mipow Limited
+Device id:                    BTL201
+Device version:               BTL201_v2
+Device software:              Application version 2.4.3.26
+Device CPU:                   CSR101x A05
 
-Current color (001b):       00000000
-White / Red / Green / Blue: off
+Color:                        WRGB(0,0,29,1)
 
-Current effect (0019):      006bff00ff00ffff
-Effect:                     halt (ff)
-Effect color:               WRGB(0,107,255,0)
-Effect time (raw):          255
-Effect time (approx.):      n/a
+Effect:                       halt
+Effect color:                 off
+Effect time (raw):            255
+Effect time (approx.):        n/a
 
-Timer Settings (001f):      04ffff04ffff04ffff04ffff160e
-Timer Effect (0013):        0000000000000000000000ff2f00700000000008
+Time:                         16:41
 
-Time:                       22:14
+Timer 1:                      turnon
+Timer 1 time:                 n/a
+Timer 1 color:                WRGB(0,0,0,31)
+Timer 1 time (minutes):       225
 
-Timer 1:                    04ffff
-Timer 1 effect:             0000000000
-Timer 1 type:               off (04)
-Timer 1 time:               n/a
-Timer 1 color:              off
-Timer 1 time (minutes):     0
+Timer 2:                      turnon
+Timer 2 time:                 n/a
+Timer 2 color:                WRGB(0,0,31,0)
+Timer 2 time (minutes):       225
 
-Timer 2:                    04ffff
-Timer 2 effect:             0000000000
-Timer 2 type:               off (04)
-Timer 2 time:               n/a
-Timer 2 color:              off
-Timer 2 time (minutes):     0
+Timer 3:                      turnon
+Timer 3 time:                 16:56
+Timer 3 color:                WRGB(0,31,0,0)
+Timer 3 time (minutes):       225
 
-Timer 3:                    04ffff
-Timer 3 effect:             00ff2f0070
-Timer 3 type:               off (04)
-Timer 3 time:               n/a
-Timer 3 color:              WRGB(0,255,47,0)
-Timer 3 time (minutes):     112
+Timer 4:                      turnoff
+Timer 4 time:                 20:41
+Timer 4 color:                off
+Timer 4 time (minutes):       225
 
-Timer 4:                    04ffff
-Timer 4 effect:             0000000008
-Timer 4 type:               off (04)
-Timer 4 time:               n/a
-Timer 4 color:              off
-Timer 4 time (minutes):     8
+Randommode:                   off
+```
 
-Randommode (0015):          020e16ffffffff000000000000
-Randommode status:          off
+```
+$ mipow W --device --color --effect --timer --random --json
+{
+  "device" : {
+    "mac" : "6A:9C:4B:0F:AC:E6",
+    "name" : "Wohnzimmer",
+    "battery" : "(not supported)",
+    "vendor" : "Mipow Limited",
+    "id" : "BTL201",
+    "version" : "BTL201_v2",
+    "software" : "Application version 2.4.3.26",
+    "cpu" : "CSR101x A05"
+  },
+  "state" : {
+    "color" : "WRGB(0,0,29,1)",
+    "effect" : {
+      "effect" : "halt",
+      "color" : "off",
+      "repititions" : 3840,
+      "time" : {
+        "speed_raw" : 255,
+        "speed_human" : "n/a",
+        "pause_raw" : 255,
+        "pause_human" : "25.5 sec"
+      }
+    }
+  },
+  "time" : "16:42",
+  "timer" : [
+    {
+      "type" : "turnon",
+      "start" : "n/a",
+      "runtime" : "225",
+      "color" : "WRGB(0,0,0,31)"
+    },
+    {
+      "type" : "turnon",
+      "start" : "n/a",
+      "runtime" : "225",
+      "color" : "WRGB(0,0,31,0)"
+    },
+    {
+      "type" : "turnon",
+      "start" : "16:56",
+      "runtime" : "225",
+      "color" : "WRGB(0,31,0,0)"
+    },
+    {
+      "type" : "turnoff",
+      "start" : "20:41",
+      "runtime" : "225",
+      "color" : "off"
+    }
+  ],
+  "random" : {
+    "status" : "off"
+  }
+}
 ```
 
 **Note:** You can use just a part of the name, here only "Liv", instead of MAC address or the full given name. 

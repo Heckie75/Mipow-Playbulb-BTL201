@@ -51,7 +51,9 @@ set HELP(down) "\
   --down                            - dim light"
 set HELP(color) "\
   --color <white> <red> <green> <blue> \n\
- \                                  - set color, each value 0 - 255"
+ \                                  - set color, each value 0 - 255\n\
+ \--color                           - request current color of bulb"
+
 set HELP(animate) "\
   --animate <hold> <white> <red> <green> <blue> \n\
  \                                  - change color smoothly based \n\
@@ -105,7 +107,8 @@ set HELP(timer) "\
  \                                    color values: 0 - 255 \n\
  --timer <timer> off               - deactivates single timer \n\
  \                                    <timer>: No. of timer 1 - 4 \n\
- --timer off                       - deactivates all timers"
+ --timer off                       - deactivates all timers \n\
+ --timer                           - request current timer settings"
 set HELP(fade) "\
   --fade <minutes> <white> <red> <green> <blue> \n\
  \                                  - change color smoothly \n\
@@ -147,13 +150,22 @@ set HELP(random) "\
  \                                    <min>: min runtime in minutes \n\
  \                                    <max>: max runtime in minutes \n\
  \                                    color values: 0 - 255 \n\n\
- --random off                      - stop random mode"
+ --random off                      - stop random mode \n\
+ --random                          - request current random mode state"
+ 
 set HELP(status) "\
   --status                          - print main information of bulb"
 set HELP(help) "\
   --help <command>                  - get help for specific command"
 set HELP(dump) "\
-  --dump                            - dump full state of bulb"
+  --dump                            - request full state of bulb"
+set HELP(device) "\
+  --device                          - request device information of bulb"
+set HELP(effect) "\
+  --effect                          - request current effect of bulb"
+
+set HELP(print) "\
+  --print                           - prints collected data of bulb"
 set HELP(json) "\
   --json                            - dump full state of bulb in json format"
 set HELP(name) "\
@@ -167,9 +179,9 @@ set HELP(reset) "\
 set HELP(setup) "\
   --setup                           - setup bulb for this program"
 set HELP(verbose) "\
-  --verbose                          - print information about processing"
+  --verbose                         - print information about processing"
 set HELP(debug) "\
-  --debug                            - print actions in gatttool"
+  --debug                           - print actions in gatttool"
 
 
 
@@ -185,6 +197,7 @@ set INIT(color)              2
 set INIT(effect)             4
 set INIT(timers)             8
 set INIT(device)             16
+set INIT(random)             32
 
 set CHARACTERISTIC(2a19)     "battery"
 set CHARACTERISTIC(2a25)     "devid"
@@ -334,6 +347,7 @@ proc help {argv} {
     puts stderr "$HELP(up)"
     puts stderr "$HELP(down)\n"
     puts stderr "\nBuild-in effects:\n"
+    puts stderr "$HELP(effect)"
     puts stderr "$HELP(pulse)"
     puts stderr "$HELP(blink)"
     puts stderr "$HELP(rainbow)"
@@ -359,6 +373,8 @@ proc help {argv} {
     puts stderr "$HELP(password)"
     puts stderr "$HELP(sleep)"
     puts stderr "$HELP(dump)"
+    puts stderr "$HELP(device)"
+    puts stderr "$HELP(print)"
     puts stderr "$HELP(json)"
     puts stderr "$HELP(verbose)"
     puts stderr "$HELP(debug)"
@@ -454,8 +470,11 @@ proc init {level} {
   }
   if {$level & $INIT(timers)} {
     readTimers
-    readRandomMode
     set bulb(init) [ expr $bulb(init) | $INIT(timers) ]
+  }
+  if {$level & $INIT(random)} {
+    readRandomMode
+    set bulb(init) [ expr $bulb(init) | $INIT(random) ]
   }
 
   return $bulb(init)
@@ -846,70 +865,85 @@ proc colorToString {color} {
 proc dumpBulb {} {
   global HANDLES
   global EFFECTS
+  global INIT
   global bulb
 
   set out "\n"
-  append out "Device mac:                   $bulb(mac)\n"
-  append out "Device name:                  $bulb(devname)\n"
 
-  if { [info exists HANDLES(devpassword)] } {
-    append out "Device password:              $bulb(devpassword)\n"
-  } else {
-    append out "Device password:              (not supported)\n"
+  if {$bulb(init) & $INIT(device)} {
+    append out "Device mac:                   $bulb(mac)\n"
+    append out "Device name:                  $bulb(devname)\n"
+
+    if { [info exists HANDLES(devpassword)] } {
+      append out "Device password:              $bulb(devpassword)\n"
+    } else {
+      append out "Device password:              (not supported)\n"
+    }
+
+    if { [info exists HANDLES(battery)] } {
+      append out "Battery level:                $bulb(battery)\n"
+    }
+
+    append out "Device vendor:                $bulb(devvendor)\n"
+    append out "Device id:                    $bulb(devid)\n"
+    append out "Device version:               $bulb(devversion)\n"
+    append out "Device software:              $bulb(devsoftware)\n"
+    append out "Device CPU:                   $bulb(devcpu)\n"
+   append out "\n"
   }
 
-  if { [info exists HANDLES(battery)] } {
-    append out "Battery level:                $bulb(battery)\n"
+  if {$bulb(init) & $INIT(color)} {
+    append out "Color:                        [colorToString $bulb(color)]\n"
+    append out "\n"
   }
 
-  append out "Device vendor:                $bulb(devvendor)\n"
-  append out "Device id:                    $bulb(devid)\n"
-  append out "Device version:               $bulb(devversion)\n"
-  append out "Device software:              $bulb(devsoftware)\n"
-  append out "Device CPU:                   $bulb(devcpu)\n"
-  append out "\n"
-  append out "Color:                        [colorToString $bulb(color)]\n"
-  append out "\n"
-  append out "Effect:                       [getEffectName $bulb(effect_effect)]\n"
-  append out "Effect color:                 [colorToString $bulb(effect_color)]\n"
-  append out "Effect time (raw):            $bulb(effect_hold)\n"
-  append out "Effect time (approx.):        [holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\n"
-  if { $bulb(effect_effect) == 0 } {
-    append out "Effect pause (raw):           $bulb(effect_pause)\n"
-    append out "Effect pause (approx.):       [holdToHumanReadable $EFFECTS(pause) $bulb(effect_pause)]\n"
-    append out "Effect repititions:           $bulb(effect_repititions)\n"
+  if {$bulb(init) & $INIT(effect)} {
+    append out "Effect:                       [getEffectName $bulb(effect_effect)]\n"
+    append out "Effect color:                 [colorToString $bulb(effect_color)]\n"
+    append out "Effect time (raw):            $bulb(effect_hold)\n"
+    append out "Effect time (approx.):        [holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\n"
+    if { $bulb(effect_effect) == 0 } {
+      append out "Effect pause (raw):           $bulb(effect_pause)\n"
+      append out "Effect pause (approx.):       [holdToHumanReadable $EFFECTS(pause) $bulb(effect_pause)]\n"
+      append out "Effect repititions:           $bulb(effect_repititions)\n"
+    }
+    append out "\n"
   }
-  append out "\n"
-  append out "Time:                         [hexToTime $bulb(time)]\n"
-  append out "\n"
-  for {set i 0} {$i < 4} {incr i} {
-    set timertype [getTimerType $bulb("timer_type_$i")]
 
-    append out "Timer [expr $i + 1]:                      $timertype\n"
-    if {$timertype != "off"} {
-      append out "Timer [expr $i + 1] time:                 [hexToTime $bulb("timer_time_$i")]\n"
-      append out "Timer [expr $i + 1] color:                [colorToString $bulb("timer_effect_color_$i")]\n"
-      append out "Timer [expr $i + 1] time (minutes):       [hexToDecimal $bulb("timer_effect_hold_$i")]\n"
-      append out "\n"
+  if {$bulb(init) & $INIT(timers)} {
+    append out "Time:                         [hexToTime $bulb(time)]\n"
+    append out "\n"
+    for {set i 0} {$i < 4} {incr i} {
+      set timertype [getTimerType $bulb("timer_type_$i")]
+
+      append out "Timer [expr $i + 1]:                      $timertype\n"
+      if {$timertype != "off"} {
+        append out "Timer [expr $i + 1] time:                 [hexToTime $bulb("timer_time_$i")]\n"
+        append out "Timer [expr $i + 1] color:                [colorToString $bulb("timer_effect_color_$i")]\n"
+        append out "Timer [expr $i + 1] time (minutes):       [hexToDecimal $bulb("timer_effect_hold_$i")]\n"
+        append out "\n"
+      }
     }
   }
 
-  if { [info exists HANDLES(randommode)] } {
+  if {$bulb(init) & $INIT(random)} {
+    if { [info exists HANDLES(randommode)] } {
 
-    set randstatus [getRandomStatus]
-    append out "Randommode:                   $randstatus\n"
-    if {$randstatus != "off"} {
-      append out "Randommode start at:          [hexToTime $bulb(randommode_start)]\n"
-      append out "Randommode stop at:           [hexToTime $bulb(randommode_stop)]\n"
-      append out "Randommode min.:              [hexToDecimal $bulb(randommode_min)] minutes\n"
-      append out "Randommode max.:              [hexToDecimal $bulb(randommode_max)] minutes\n"
-      append out "Randommode color:             [colorToString $bulb(randommode_color)]\n"
+      set randstatus [getRandomStatus]
+      append out "Randommode:                   $randstatus\n"
+      if {$randstatus != "off"} {
+        append out "Randommode start at:          [hexToTime $bulb(randommode_start)]\n"
+        append out "Randommode stop at:           [hexToTime $bulb(randommode_stop)]\n"
+        append out "Randommode min.:              [hexToDecimal $bulb(randommode_min)] minutes\n"
+        append out "Randommode max.:              [hexToDecimal $bulb(randommode_max)] minutes\n"
+        append out "Randommode color:             [colorToString $bulb(randommode_color)]\n"
+      }
+
+    } else {
+
+      append out "Randommode:                   (not supported)\n"
+
     }
-
-  } else {
-
-    append out "Randommode:                   (not supported)\n"
-
   }
 
   puts $out
@@ -918,60 +952,79 @@ proc dumpBulb {} {
 proc dumpBulbToJson {} {
   global HANDLES
   global EFFECTS
+  global INIT
   global bulb
 
   set out "\{\n"
-  append out "  \"device\" : \{\n"
-  append out "    \"mac\" : \"$bulb(mac)\",\n"
-  append out "    \"name\" : \"$bulb(devname)\",\n"
 
-  if { [info exists HANDLES(devpassword)] } {
-    append out "    \"password\" : \"$bulb(devpassword)\",\n"
-  }
+  if {$bulb(init) & $INIT(device)} {
+    append out "  \"device\" : \{\n"
+    append out "    \"mac\" : \"$bulb(mac)\",\n"
+    append out "    \"name\" : \"$bulb(devname)\",\n"
 
-  if { [info exists HANDLES(battery)] } {
-    append out "    \"battery\" : \"$bulb(battery)\",\n"
-  }
-
-  append out "    \"vendor\" : \"$bulb(devvendor)\",\n"
-  append out "    \"id\" : \"$bulb(devid)\",\n"
-  append out "    \"version\" : \"$bulb(devversion)\",\n"
-  append out "    \"software\" : \"$bulb(devsoftware)\",\n"
-  append out "    \"cpu\" : \"$bulb(devcpu)\"\n"
-  append out "  \},\n"
-  append out "  \"state\" : \{\n"
-  append out "    \"color\" : \"[colorToString $bulb(color)]\",\n"
-  append out "    \"effect\" : \{\n"
-  append out "      \"effect\" : \"[getEffectName $bulb(effect_effect)]\",\n"
-  append out "      \"color\" : \"[colorToString $bulb(effect_color)]\",\n"
-  append out "      \"repititions\" : $bulb(effect_repititions),\n"
-  append out "      \"time\" : \{\n"
-  append out "        \"speed_raw\" : $bulb(effect_hold),\n"
-  append out "        \"speed_human\" : \"[holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\",\n"
-  append out "        \"pause_raw\" : $bulb(effect_pause),\n"
-  append out "        \"pause_human\" : \"[holdToHumanReadable $EFFECTS(pause) $bulb(effect_pause)]\"\n"
-  append out "      \}\n"
-  append out "    \},\n"
-  append out "    \"time\" : \"[hexToTime $bulb(time)]\"\n"
-  append out "  \},\n"
-
-  append out "  \"timer\" : \[\n"
-  for {set i 0} {$i < 4} {incr i} {
-    append out "    \{\n"
-    append out "      \"type\" : \"[getTimerType $bulb("timer_type_$i")]\",\n"
-    append out "      \"start\" : \"[hexToTime $bulb("timer_time_$i")]\",\n"
-    append out "      \"runtime\" : \"[hexToDecimal $bulb("timer_effect_hold_$i")]\",\n"
-    append out "      \"color\" : \"[colorToString $bulb("timer_effect_color_$i")]\"\n"
-    if { $i < 3 } {
-      append out "    \},\n"
-    } else {
-      append out "    \}\n"
+    if { [info exists HANDLES(devpassword)] } {
+      append out "    \"password\" : \"$bulb(devpassword)\",\n"
     }
+
+    if { [info exists HANDLES(battery)] } {
+      append out "    \"battery\" : \"$bulb(battery)\",\n"
+    }
+
+    append out "    \"vendor\" : \"$bulb(devvendor)\",\n"
+    append out "    \"id\" : \"$bulb(devid)\",\n"
+    append out "    \"version\" : \"$bulb(devversion)\",\n"
+    append out "    \"software\" : \"$bulb(devsoftware)\",\n"
+    append out "    \"cpu\" : \"$bulb(devcpu)\"\n"
+    append out "  \},\n"
+  } else {
+    append out "  \"device\" : null,\n"    
+  }
+  append out "  \"state\" : \{\n"
+  if {$bulb(init) & $INIT(color)} {
+    append out "    \"color\" : \"[colorToString $bulb(color)]\",\n"
+  } else {
+    append out "    \"color\" : null,\n"
   }
 
-  if { [info exists HANDLES(randommode)] } {
+  if {$bulb(init) & $INIT(effect)} {
+    append out "    \"effect\" : \{\n"
+    append out "      \"effect\" : \"[getEffectName $bulb(effect_effect)]\",\n"
+    append out "      \"color\" : \"[colorToString $bulb(effect_color)]\",\n"
+    append out "      \"repititions\" : $bulb(effect_repititions),\n"
+    append out "      \"time\" : \{\n"
+    append out "        \"speed_raw\" : $bulb(effect_hold),\n"
+    append out "        \"speed_human\" : \"[holdToHumanReadable $bulb(effect_effect) $bulb(effect_hold)]\",\n"
+    append out "        \"pause_raw\" : $bulb(effect_pause),\n"
+    append out "        \"pause_human\" : \"[holdToHumanReadable $EFFECTS(pause) $bulb(effect_pause)]\"\n"
+    append out "      \}\n"
+    append out "    \}\n"
+  } else {
+    append out "    \"effect\" : null\n"
+  }
+  append out "  \},\n"
 
+  if {$bulb(init) & $INIT(timers)} {
+    append out "  \"time\" : \"[hexToTime $bulb(time)]\",\n"
+    append out "  \"timer\" : \[\n"
+    for {set i 0} {$i < 4} {incr i} {
+      append out "    \{\n"
+      append out "      \"type\" : \"[getTimerType $bulb("timer_type_$i")]\",\n"
+      append out "      \"start\" : \"[hexToTime $bulb("timer_time_$i")]\",\n"
+      append out "      \"runtime\" : \"[hexToDecimal $bulb("timer_effect_hold_$i")]\",\n"
+      append out "      \"color\" : \"[colorToString $bulb("timer_effect_color_$i")]\"\n"
+      if { $i < 3 } {
+        append out "    \},\n"
+      } else {
+        append out "    \}\n"
+      }
+    }
     append out "  \],\n"
+  } else {
+    append out "  \"time\" : null,\n"
+    append out "  \"timer\" : null,\n"
+  }
+
+  if {$bulb(init) & $INIT(random)} {
     set randstatus [getRandomStatus]
     append out "  \"random\" : \{\n"
     if {$randstatus != "off"} {
@@ -988,7 +1041,7 @@ proc dumpBulbToJson {} {
 
   } else {
 
-    append out "  \]\n"
+    append out "  \"random\" : null\n"
 
   }
 
@@ -1325,15 +1378,19 @@ proc doCommand { cmd } {
 
   switch -regexp $c {
     ^status$ {
-      init [expr $INIT(color) + $INIT(effect) + $INIT(timers)]
+      init [expr $INIT(color) + $INIT(effect) + $INIT(timers) + $INIT(random)]
       printStatus
     }
+    ^device$ {
+      init $INIT(device)
+    }
     ^dump$ {
-      init [expr $INIT(device) + $INIT(color) + $INIT(effect) + $INIT(timers)]
+      init [expr $INIT(device) + $INIT(color) + $INIT(effect) + $INIT(timers) + $INIT(random)]
+    }
+    ^print$ {
       dumpBulb
     }
     ^json$ {
-      init [expr $INIT(device) + $INIT(color) + $INIT(effect) + $INIT(timers)]
       dumpBulbToJson
     }
     ^down$ {
@@ -1356,10 +1413,16 @@ proc doCommand { cmd } {
       init [expr $INIT(color) + $INIT(effect)]
       toggle
     }
+    ^color$ {
+      init $INIT(color)
+    }
     ^color* {
       checkArgs $c 4 "color" {^color [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
       init 0
       setColor [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4]
+    }
+    ^effect$ {
+      init $INIT(effect)
     }
     ^animate* {
       checkArgs $c 5 "animate" {^animate [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
@@ -1460,6 +1523,9 @@ proc doCommand { cmd } {
       resetTimer
       setTimer 4 0 [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5]
     }
+    ^timer$ {
+      init $INIT(timers)
+    }
     ^timer* {
       if {[lindex $c 1] == "off"} {
         init 0
@@ -1478,6 +1544,9 @@ proc doCommand { cmd } {
         setTimer [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5] [lindex $c 6] [lindex $c 7]
       }
     }
+    ^random$ {
+      init $INIT(random)
+    }
     ^random* {
 
       if {[lindex $c 1] == "off"} {
@@ -1485,7 +1554,7 @@ proc doCommand { cmd } {
         stopRandomMode
       } else {
         checkArgs $c 8 "random" {^random [0-9]+[:0-9]* [0-9]+[:0-9]* [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+$}
-        init $INIT(timers)
+        init $INIT(random)
         setRandomMode [lindex $c 1] [lindex $c 2] [lindex $c 3] [lindex $c 4] [lindex $c 5] [lindex $c 6] [lindex $c 7] [lindex $c 8]
       }
 
