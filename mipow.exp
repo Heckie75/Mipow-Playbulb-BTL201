@@ -1024,7 +1024,7 @@ proc dumpBulbToJson {} {
     append out "  \"timer\" : null,\n"
   }
 
-  if {$bulb(init) & $INIT(random)} {
+  if {$bulb(init) & $INIT(random) && [info exists HANDLES(randommode)]} {
     set randstatus [getRandomStatus]
     append out "  \"random\" : \{\n"
     if {$randstatus != "off"} {
