@@ -55,10 +55,9 @@ Build-in effects:
                                      <pause> (optional) in 1/10s: 0 - 255
  --rainbow <hold>                  - run build-in rainbow effect 
                                      <hold> per step in ms: 0 - 255
- --candle <white> <red> <green> <blue> <hold> 
+ --candle <white> <red> <green> <blue>
                                    - run build-in candle effect 
                                      color values: 0 - 255 
-                                     <hold>
  --disco <hold>                    - run build-in disco effect 
                                      <hold> in 1/100s: 0 - 255
  --hold <hold>  [<repetitions> <pause>] 
