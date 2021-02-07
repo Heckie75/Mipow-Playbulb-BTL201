@@ -232,7 +232,7 @@ set EFFECTS(blink)           "00"
 set EFFECTS(pulse)           "01"
 set EFFECTS(disco)           "02"
 set EFFECTS(rainbow)         "03"
-set EFFECTS(candle)          "05"
+set EFFECTS(candle)          "04"
 set EFFECTS(pause)           "pause"
 set EFFECTS(halt)            "ff"
 
@@ -1606,8 +1606,8 @@ proc turnon {} {
 
 proc turnoff {} {
   global bulb
-  playEffect "$bulb(color)ff00ffff"
   playColor "00000000"
+  playEffect "$bulb(color)05000100"
 }
 
 proc toggle {} {
