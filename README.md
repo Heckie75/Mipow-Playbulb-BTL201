@@ -1,4 +1,7 @@
 # Mipow-Playbulb-BTL201
+
+**Note:** This project is depracted and won't be maintained anymore. I've written a new API in Python, see [mipow-bulbs](https://github.com/Heckie75/mipow-bulbs).
+
 Full-featured shell script interface based on expect and gatttool for Mipow Playbulb. It is (should be compatible) with the following models:
 * Mipow Playbulb Rainbow (BTL200), tested rev. BTL200_v7 / Application version 2.4.3.26 (no candle effect)
 * Mipow Playbulb Smart (BTL201), tested rev. BTL201_v2 / Application version 2.4.3.26 (no candle effect)

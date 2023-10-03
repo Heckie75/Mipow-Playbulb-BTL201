@@ -1218,7 +1218,7 @@ proc setTimer {timer start minutes w r g b} {
   return [offsetTime $starttime $minutes]
 }
 
-proc stopTimer {timer} {
+proc "stopTimer" {timer} {
   global TIMER_EFFECTS
 
   set htimer [decimalToHex [expr $timer - 1]]
